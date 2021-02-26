@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.widget.ImageView
 import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.Volley
-import java.util.*
+import java.util.UUID
 
 class VolleyBitmapQueue(
     context: Context
