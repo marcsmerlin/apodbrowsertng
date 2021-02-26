@@ -1,5 +1,6 @@
 package com.marcsmerlin.apodbrowser
 
+import com.marcsmerlin.apodbrowser.utils.IStringQueue
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random

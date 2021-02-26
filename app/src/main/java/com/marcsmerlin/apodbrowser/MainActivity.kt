@@ -2,11 +2,14 @@ package com.marcsmerlin.apodbrowser
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
+import com.marcsmerlin.apodbrowser.utils.BitmapLoader
+import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
+import com.marcsmerlin.apodbrowser.utils.VolleyBitmapQueue
+import com.marcsmerlin.apodbrowser.utils.VolleyStringQueue
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ApodViewModel

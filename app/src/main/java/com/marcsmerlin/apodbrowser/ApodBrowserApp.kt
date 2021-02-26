@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.marcsmerlin.apodbrowser.utils.BitmapStatus
+import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun ApodBrowserScreen(

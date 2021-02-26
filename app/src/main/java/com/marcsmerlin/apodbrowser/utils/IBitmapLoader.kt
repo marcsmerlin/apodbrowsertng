@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser
+package com.marcsmerlin.apodbrowser.utils
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.State
