@@ -33,4 +33,9 @@ data class Apod(
     fun isVideo(): Boolean = mediaType == "video"
     fun hasCopyrightInfo(): Boolean = copyrightInfo != ""
     fun hasServiceVersion(): Boolean = serviceVersion != ""
+
+    val contentDescription: String
+        get() {
+            return "$title\n$date\n$copyrightInfo\n$explanation"
+        }
 }
