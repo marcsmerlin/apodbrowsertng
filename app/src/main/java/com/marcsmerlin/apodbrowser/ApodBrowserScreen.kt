@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -15,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ApodBrowserScreen(
@@ -99,7 +102,10 @@ private fun ApodImage(
             confirmButton = {},
             dismissButton = {},
             text = {
-                Text(contentDescription)
+                Text(
+                    text = contentDescription,
+                    fontSize = 16.sp,
+                )
             },
         )
 
@@ -130,26 +136,6 @@ private fun ApodDescription(
         with(apod) {
             Text(title)
             Text(date)
-            if (hasCopyrightInfo())
-                Text(copyrightInfo)
-            Text(explanation, overflow = TextOverflow.Ellipsis)
-        }
-    }
-}
-
-@Composable
-private fun ApodDebugText(
-    apod: Apod,
-) {
-    Column(
-        Modifier
-            .fillMaxSize()
-    ) {
-        with(apod) {
-            Text(title)
-            Text(date)
-            Text(mediaType)
-            Text(url)
             if (hasCopyrightInfo())
                 Text(copyrightInfo)
             Text(explanation, overflow = TextOverflow.Ellipsis)

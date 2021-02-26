@@ -9,17 +9,14 @@ import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 
 class ApodBrowserActivity : AppCompatActivity() {
     private lateinit var viewModel: ApodViewModel
+    private lateinit var bitmapLoader: IBitmapLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val container = (application as ApodBrowserApplication).container
         viewModel = container.viewModel
-
-        val bitmapLoader =
-            BitmapLoader(
-                VolleyBitmapQueue(context = applicationContext)
-            )
+        bitmapLoader = container.bitmapLoader
 
         setContent {
             ApodBrowserTheme {

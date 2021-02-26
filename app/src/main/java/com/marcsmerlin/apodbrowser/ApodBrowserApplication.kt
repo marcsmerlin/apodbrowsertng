@@ -1,20 +1,29 @@
 package com.marcsmerlin.apodbrowser
 
 import android.app.Application
+import android.content.Context
+import androidx.lifecycle.ViewModel
 
-class AppContainer(application: Application) {
+class AppContainer(applicationContext: Context) {
 
-    private val queue = VolleyStringQueue(context = application.applicationContext)
+        val viewModel =
+            ApodViewModel(
+                repository =
+                ApodRepository(
+                    queue = VolleyStringQueue(context = applicationContext),
+                    endpoint = "https://api.nasa.gov/planetary/apod",
+                    apiKey = "Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE",
+                    firstDate = "1995-06-16",
+                )
+            )
 
-    private val repository =
-        ApodRepository(
-            queue = queue,
-            endpoint = "https://api.nasa.gov/planetary/apod",
-            apiKey = "Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE",
-            firstDate = "1995-06-16",
-        )
-
-    var viewModel = ApodViewModel(repository = repository)
+        val bitmapLoader: IBitmapLoader =
+            BitmapLoader(
+                queue =
+                VolleyBitmapQueue(
+                    context = applicationContext
+                )
+            )
 }
 
 class ApodBrowserApplication : Application() {
