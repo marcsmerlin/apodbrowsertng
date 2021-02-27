@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             ApodBrowserTheme {
                 Surface(color = MaterialTheme.colors.background) {
                     ApodBrowserScreen(
-                        apodResult = viewModel.result,
+                        apodStatus = viewModel.status,
                         bitmapLoader = bitmapLoader,
                     )
                 }

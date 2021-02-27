@@ -4,31 +4,31 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
-sealed class ApodResult
+sealed class ApodStatus
 
 data class ApodSuccess(
     val apod: Apod,
     val isHome: Boolean,
     val hasNext: Boolean,
     val hasPrevious: Boolean,
-) : ApodResult()
+) : ApodStatus()
 
 data class ApodError(
     val error: Exception
-) : ApodResult()
+) : ApodStatus()
 
-object ApodLoading : ApodResult()
+object ApodLoading : ApodStatus()
 
 class ApodViewModel(
     private val repository: ApodRepository
 ) : ViewModel() {
 
-    private val _result = mutableStateOf<ApodResult>(ApodLoading)
-    val result: State<ApodResult>
-        get() = _result
+    private val _status = mutableStateOf<ApodStatus>(ApodLoading)
+    val status: State<ApodStatus>
+        get() = _status
 
     private fun apodListener(apod: Apod) {
-        _result.value = ApodSuccess(
+        _status.value = ApodSuccess(
             apod = apod,
             isHome = repository.isHome(),
             hasNext = repository.hasNextDate(),
@@ -37,7 +37,7 @@ class ApodViewModel(
     }
 
     private fun errorListener(error: Exception) {
-        _result.value = ApodError(error)
+        _status.value = ApodError(error)
     }
 
     init {
