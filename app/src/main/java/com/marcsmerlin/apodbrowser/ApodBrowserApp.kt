@@ -1,18 +1,16 @@
 package com.marcsmerlin.apodbrowser
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Snackbar
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -27,7 +25,7 @@ fun ApodBrowserApp(
     apodViewModel: IApodViewModel,
 ) {
     ApodBrowserTheme {
-        HomeScreen(
+        HomeScaffold(
             apodStatus = apodViewModel.status,
             bitmapLoader = appContainer.bitmapLoader
         )
@@ -35,73 +33,112 @@ fun ApodBrowserApp(
 }
 
 @Composable
-private fun HomeScreen(
+private fun HomeScaffold(
     apodStatus: State<ApodStatus>,
     bitmapLoader: IBitmapLoader,
 ) {
+    val scaffoldState = rememberScaffoldState()
 
-    when (val status = apodStatus.value) {
-
-        ApodLoading ->
-            SnackbarNotification(text = "Loading app \u2026")
-        is ApodError ->
-            ErrorAlertDialog(
-                title = "Error loading app",
-                error = status.error
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            val title = "Apod Browser"
+            TopAppBar(
+                title = { Text(text = title) },
             )
-        is ApodSuccess ->
-            ContentScreen(
-                apod = status.apod,
+        },
+        content = {
+            ScaffoldContent(
+                apodStatus = apodStatus,
                 bitmapLoader = bitmapLoader,
             )
+        },
+    )
+}
+
+@Composable
+private fun ScaffoldContent(
+    apodStatus: State<ApodStatus>,
+    bitmapLoader: IBitmapLoader,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val status = apodStatus.value) {
+            ApodLoading ->
+                Text(text = "Loading app\u2026")
+            is ApodError ->
+                ErrorAlert(
+                    title = "Error loading app",
+                    error = status.error
+                )
+            is ApodSuccess ->
+                ApodContent(
+                    apod = status.apod,
+                    bitmapLoader = bitmapLoader,
+                )
+        }
     }
 }
 
 @Composable
-private fun ContentScreen(
+private fun ApodContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
 ) {
+    Column(
+    ) {
+        Text(
+            text = apod.title + " (" + apod.date + ")",
+        )
 
-    if (apod.isImage()) {
-        ImageTracker(
-            bitmapLoader.queueRequest(apod.url),
-        )
-    } else {
-        TextContent(
-            apod = apod,
-        )
+        Box(
+        ) {
+            if (apod.isImage()) {
+                BitmapLoader(
+                    bitmapLoader.queueRequest(apod.url),
+                )
+            } else {
+                TextContent(
+                    apod = apod,
+                )
+            }
+        }
     }
+
 }
 
 @Composable
-private fun ImageTracker(
+private fun BitmapLoader(
     bitmapStatus: State<BitmapStatus>,
 ) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val value = bitmapStatus.value) {
+            BitmapStatus.Loading ->
+                Text(text = "Loading image\u2026")
 
-    when (val value = bitmapStatus.value) {
-
-        BitmapStatus.Loading ->
-            SnackbarNotification(text = "Loading image \u2026")
-        is BitmapStatus.Error ->
-            ErrorAlertDialog(
-                title = "Error loading image",
-                value.error,
-            )
-        is BitmapStatus.Success ->
-            ImageContent(
-                bitmap = value.bitmap.asImageBitmap(),
-            )
+            is BitmapStatus.Error ->
+                ErrorAlert(
+                    title = "Error loading image",
+                    value.error,
+                )
+            is BitmapStatus.Success ->
+                BitmapImage(
+                    bitmap = value.bitmap.asImageBitmap(),
+                )
+        }
     }
 }
 
 @Composable
-private fun ImageContent(
+private fun BitmapImage(
     bitmap: ImageBitmap,
 ) {
     Box(
-        Modifier
-            .fillMaxSize()
     ) {
         Image(
             bitmap = bitmap,
@@ -117,8 +154,6 @@ private fun TextContent(
     apod: Apod
 ) {
     Column(
-        Modifier
-            .fillMaxSize()
     ) {
         with(apod) {
             Text(text = title)
@@ -133,14 +168,7 @@ private fun TextContent(
 }
 
 @Composable
-private fun SnackbarNotification(text: String) {
-    Snackbar {
-        Text(text = text)
-    }
-}
-
-@Composable
-private fun ErrorAlertDialog(
+private fun ErrorAlert(
     title: String,
     error: Exception,
 ) {
