@@ -5,27 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-sealed class ApodStatus
-
-data class ApodSuccess(
-    val apod: Apod,
-    val isHome: Boolean,
-    val hasNext: Boolean,
-    val hasPrevious: Boolean,
-) : ApodStatus()
-
-data class ApodError(
-    val error: Exception
-) : ApodStatus()
-
-object ApodLoading : ApodStatus()
-
 class ApodViewModel(
     private val repository: ApodRepository
-) : ViewModel() {
+) : ViewModel(), IApodViewModel {
 
     private val _status = mutableStateOf<ApodStatus>(ApodLoading)
-    val status: State<ApodStatus>
+    override val status: State<ApodStatus>
         get() = _status
 
     private fun apodListener(apod: Apod) {
@@ -45,28 +30,28 @@ class ApodViewModel(
         goHome()
     }
 
-    fun goHome() {
+    override fun goHome() {
         repository.queueHomeRequest(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getNext() {
+    override fun getNext() {
         repository.queueRequestForNextDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getPrevious() {
+    override fun getPrevious() {
         repository.queueRequestForPreviousDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getRandom() {
+    override fun getRandom() {
         repository.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,
@@ -79,10 +64,14 @@ class ApodViewModel(
     }
 }
 
-class ApodViewModelFactory(private val repository: ApodRepository) : ViewModelProvider.Factory {
+class ApodViewModelFactory(
+    private val repository: ApodRepository
+) :
+    ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ApodViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
             return ApodViewModel(repository = repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -18,17 +18,6 @@ class ApodRepository(
     private lateinit var homeDate: LocalDate
     private lateinit var currentDate: LocalDate
 
-    init {
-        queue.addStringRequest(
-            baseUrl,
-            { string ->
-                currentDate = Apod(string).localDate
-                homeDate = currentDate
-            },
-            { exception -> throw exception },
-        )
-    }
-
     fun queueHomeRequest(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
@@ -38,6 +27,7 @@ class ApodRepository(
             { string ->
                 val apod = Apod(string)
                 currentDate = apod.localDate
+                homeDate = currentDate
                 apodListener(apod)
             },
             errorListener,
@@ -60,15 +50,17 @@ class ApodRepository(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        queue.addStringRequest(
-            urlForDate(currentDate.plusDays(1L)),
-            { string ->
-                val apod = Apod(string)
-                currentDate = apod.localDate
-                apodListener(apod)
-            },
-            errorListener,
-        )
+        if (hasNextDate()) {
+            queue.addStringRequest(
+                urlForDate(currentDate.plusDays(1L)),
+                { string ->
+                    val apod = Apod(string)
+                    currentDate = apod.localDate
+                    apodListener(apod)
+                },
+                errorListener,
+            )
+        }
     }
 
     fun hasPreviousDate(): Boolean {
@@ -79,15 +71,17 @@ class ApodRepository(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        queue.addStringRequest(
-            urlForDate(currentDate.minusDays(1L)),
-            { string ->
-                val apod = Apod(string)
-                currentDate = apod.localDate
-                apodListener(apod)
-            },
-            errorListener,
-        )
+        if (hasPreviousDate()) {
+            queue.addStringRequest(
+                urlForDate(currentDate.minusDays(1L)),
+                { string ->
+                    val apod = Apod(string)
+                    currentDate = apod.localDate
+                    apodListener(apod)
+                },
+                errorListener,
+            )
+        }
     }
 
     fun queueRequestForRandomDate(

@@ -17,18 +17,21 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun ApodBrowserApp(
     appContainer: AppContainer,
-    apodViewModel: ApodViewModel,
+    apodViewModel: IApodViewModel,
 ) {
-    HomeScreen(
-        apodStatus = apodViewModel.status,
-        bitmapLoader = appContainer.bitmapLoader
-    )
+    ApodBrowserTheme {
+        HomeScreen(
+            apodStatus = apodViewModel.status,
+            bitmapLoader = appContainer.bitmapLoader
+        )
+    }
 }
 
 @Composable
