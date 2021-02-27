@@ -10,7 +10,6 @@ import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 import com.marcsmerlin.apodbrowser.utils.BitmapLoader
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 import com.marcsmerlin.apodbrowser.utils.VolleyBitmapQueue
-import com.marcsmerlin.apodbrowser.utils.VolleyStringQueue
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModelFactory: ApodViewModelFactory
@@ -20,14 +19,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = ApodRepository(
-            queue = VolleyStringQueue(context = applicationContext),
-            endpoint = "https://api.nasa.gov/planetary/apod",
-            apiKey = "Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE",
-            firstDate = "1995-06-16",
-        )
+        val appContainer = (application as ApodBrowserApplication).container
 
-        viewModelFactory = ApodViewModelFactory(repository)
+        viewModelFactory = ApodViewModelFactory(appContainer.apodRepository)
         viewModel =
             ViewModelProvider(
                 this,
