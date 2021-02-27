@@ -21,7 +21,18 @@ import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
-fun ApodBrowserScreen(
+fun ApodBrowserApp(
+    appContainer: AppContainer,
+    apodViewModel: ApodViewModel,
+) {
+    HomeScreen(
+        apodStatus = apodViewModel.status,
+        bitmapLoader = appContainer.bitmapLoader
+    )
+}
+
+@Composable
+private fun HomeScreen(
     apodStatus: State<ApodStatus>,
     bitmapLoader: IBitmapLoader,
 ) {
@@ -36,7 +47,7 @@ fun ApodBrowserScreen(
                 error = status.error
             )
         is ApodSuccess ->
-            ApodContentScreen(
+            ContentScreen(
                 apod = status.apod,
                 bitmapLoader = bitmapLoader,
             )
@@ -44,24 +55,24 @@ fun ApodBrowserScreen(
 }
 
 @Composable
-private fun ApodContentScreen(
+private fun ContentScreen(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
 ) {
 
     if (apod.isImage()) {
-        ApodImageTracker(
+        ImageTracker(
             bitmapLoader.queueRequest(apod.url),
         )
     } else {
-        ApodTextDescription(
+        TextContent(
             apod = apod,
         )
     }
 }
 
 @Composable
-private fun ApodImageTracker(
+private fun ImageTracker(
     bitmapStatus: State<BitmapStatus>,
 ) {
 
@@ -75,14 +86,14 @@ private fun ApodImageTracker(
                 value.error,
             )
         is BitmapStatus.Success ->
-            ApodImage(
+            ImageContent(
                 bitmap = value.bitmap.asImageBitmap(),
             )
     }
 }
 
 @Composable
-private fun ApodImage(
+private fun ImageContent(
     bitmap: ImageBitmap,
 ) {
     Box(
@@ -99,7 +110,7 @@ private fun ApodImage(
 }
 
 @Composable
-private fun ApodTextDescription(
+private fun TextContent(
     apod: Apod
 ) {
     Column(

@@ -1,10 +1,14 @@
 package com.marcsmerlin.apodbrowser
 
 import android.content.Context
+import com.marcsmerlin.apodbrowser.utils.BitmapLoader
+import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
+import com.marcsmerlin.apodbrowser.utils.VolleyBitmapQueue
 import com.marcsmerlin.apodbrowser.utils.VolleyStringQueue
 
 interface AppContainer {
     val apodRepository: ApodRepository
+    val bitmapLoader: IBitmapLoader
 }
 
 class AppContainerImpl(private val applicationContext: Context) : AppContainer {
@@ -17,4 +21,14 @@ class AppContainerImpl(private val applicationContext: Context) : AppContainer {
             firstDate = "1995-06-16",
         )
     }
+
+    override val bitmapLoader: IBitmapLoader by lazy {
+        BitmapLoader(
+            queue =
+            VolleyBitmapQueue(
+                context = applicationContext
+            )
+        )
+    }
+
 }
