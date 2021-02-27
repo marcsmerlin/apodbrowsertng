@@ -3,6 +3,7 @@ package com.marcsmerlin.apodbrowser
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 sealed class ApodStatus
 
@@ -70,5 +71,20 @@ class ApodViewModel(
             ::apodListener,
             ::errorListener,
         )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.close()
+    }
+}
+
+class ApodViewModelFactory(private val repository: ApodRepository) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ApodViewModel::class.java)) {
+            return ApodViewModel(repository = repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

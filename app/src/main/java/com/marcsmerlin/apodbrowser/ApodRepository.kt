@@ -107,4 +107,8 @@ class ApodRepository(
             errorListener
         )
     }
+
+    fun close() {
+        queue.close()
+    }
 }
