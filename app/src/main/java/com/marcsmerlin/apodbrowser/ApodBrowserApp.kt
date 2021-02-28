@@ -2,6 +2,7 @@ package com.marcsmerlin.apodbrowser
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -30,7 +31,8 @@ fun ApodBrowserApp(
     ApodBrowserTheme {
         HomeScaffold(
             apodStatus = apodViewModel.status,
-            bitmapLoader = appContainer.bitmapLoader
+            bitmapLoader = appContainer.bitmapLoader,
+            getRandom = apodViewModel::getRandom,
         )
     }
 }
@@ -39,6 +41,7 @@ fun ApodBrowserApp(
 private fun HomeScaffold(
     apodStatus: State<ApodStatus>,
     bitmapLoader: IBitmapLoader,
+    getRandom: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -54,6 +57,7 @@ private fun HomeScaffold(
             ScaffoldContent(
                 apodStatus = apodStatus,
                 bitmapLoader = bitmapLoader,
+                getRandom,
             )
         },
     )
@@ -63,10 +67,10 @@ private fun HomeScaffold(
 private fun ScaffoldContent(
     apodStatus: State<ApodStatus>,
     bitmapLoader: IBitmapLoader,
-    modifier: Modifier = Modifier,
+    getRandom: () -> Unit,
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         when (val status = apodStatus.value) {
@@ -81,6 +85,7 @@ private fun ScaffoldContent(
                 ApodContent(
                     apod = status.apod,
                     bitmapLoader = bitmapLoader,
+                    getRandom,
                 )
         }
     }
@@ -90,21 +95,20 @@ private fun ScaffoldContent(
 private fun ApodContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
+    getRandom: () -> Unit
 ) {
-    Box {
-        Box(
-            Modifier.align(Alignment.TopCenter)
-        ) {
-            if (apod.isImage()) {
-                ImageContent(
-                    apod,
-                    bitmapLoader.queueRequest(apod.url),
-                )
-            } else {
-                UnsupportedMediaType(
-                    apod = apod,
-                )
-            }
+    Box(
+        Modifier.clickable { getRandom() }
+    ) {
+        if (apod.isImage()) {
+            ImageContent(
+                apod,
+                bitmapLoader.queueRequest(apod.url),
+            )
+        } else {
+            UnsupportedMediaType(
+                apod = apod,
+            )
         }
     }
 }
@@ -174,16 +178,14 @@ private fun UnsupportedMediaType(
     apod: Apod
 ) {
     Column {
-        with(apod) {
-            Text(text = "The media type \"${apod.mediaType}\" is not yet supported")
-            Text(text = title)
-            Text(text = date)
-            if (hasCopyrightInfo()) Text(text = copyrightInfo)
-            Text(
-                text = explanation,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(text = "(Media type\"${apod.mediaType}\" is not yet supported.)")
+        Spacer(modifier = Modifier.padding(12.dp))
+        Text(text = "${apod.title} (${apod.date})")
+        if (apod.hasCopyrightInfo()) Text(text = "Credit: ${apod.copyrightInfo}")
+        Text(
+            text = apod.explanation,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -192,7 +194,6 @@ private fun ErrorAlert(
     title: String,
     error: Exception,
 ) {
-
     val openDialog = remember { mutableStateOf(false) }
 
     if (openDialog.value) {
