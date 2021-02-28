@@ -2,19 +2,23 @@ package com.marcsmerlin.apodbrowser
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
@@ -60,9 +64,10 @@ private fun HomeScaffold(
 private fun ScaffoldContent(
     apodStatus: State<ApodStatus>,
     bitmapLoader: IBitmapLoader,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         when (val status = apodStatus.value) {
@@ -87,13 +92,9 @@ private fun ApodContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
 ) {
-    Column(
-    ) {
-        Text(
-            text = apod.title + " (" + apod.date + ")",
-        )
-
+    Box {
         Box(
+            Modifier.align(Alignment.TopCenter)
         ) {
             if (apod.isImage()) {
                 BitmapLoader(
@@ -105,8 +106,23 @@ private fun ApodContent(
                 )
             }
         }
-    }
 
+        Box(
+            Modifier
+                .padding(start = 42.dp, end = 42.dp, bottom = 42.dp)
+                .wrapContentSize()
+                .align(Alignment.BottomCenter)
+        ) {
+            Text(
+                text = "${apod.title} (${apod.date})",
+                modifier = Modifier.background(Color.Transparent),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                color = Color.Yellow,
+
+                )
+        }
+    }
 }
 
 @Composable
@@ -138,8 +154,7 @@ private fun BitmapLoader(
 private fun BitmapImage(
     bitmap: ImageBitmap,
 ) {
-    Box(
-    ) {
+    Box {
         Image(
             bitmap = bitmap,
             contentDescription = "",
@@ -153,8 +168,7 @@ private fun BitmapImage(
 private fun TextContent(
     apod: Apod
 ) {
-    Column(
-    ) {
+    Column {
         with(apod) {
             Text(text = title)
             Text(text = date)
