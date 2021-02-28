@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -158,13 +159,14 @@ private fun BitmapImageWithTitle(
         Box(
             Modifier
                 .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+                .background(backgroundColor.copy(alpha = 0.50f))
         ) {
             Text(
                 text = "${apod.title} (${apod.date})",
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(Color.Transparent)
-                    .padding(bottom = 18.dp),
+                    .padding(4.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp,
                 color = Color.Yellow,
@@ -178,7 +180,7 @@ private fun UnsupportedMediaType(
     apod: Apod
 ) {
     Column {
-        Text(text = "(Media type\"${apod.mediaType}\" is not yet supported.)")
+        Text(text = "(Media type \"${apod.mediaType}\" is not yet supported.)")
         Spacer(modifier = Modifier.padding(12.dp))
         Text(text = "${apod.title} (${apod.date})")
         if (apod.hasCopyrightInfo()) Text(text = "Credit: ${apod.copyrightInfo}")
