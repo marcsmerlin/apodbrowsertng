@@ -3,7 +3,6 @@ package com.marcsmerlin.apodbrowser
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -97,36 +96,22 @@ private fun ApodContent(
             Modifier.align(Alignment.TopCenter)
         ) {
             if (apod.isImage()) {
-                BitmapLoader(
+                ImageContent(
+                    apod,
                     bitmapLoader.queueRequest(apod.url),
                 )
             } else {
-                TextContent(
+                UnsupportedMediaType(
                     apod = apod,
                 )
             }
-        }
-
-        Box(
-            Modifier
-                .padding(start = 42.dp, end = 42.dp, bottom = 42.dp)
-                .wrapContentSize()
-                .align(Alignment.BottomCenter)
-        ) {
-            Text(
-                text = "${apod.title} (${apod.date})",
-                modifier = Modifier.background(Color.Transparent),
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-                color = Color.Yellow,
-
-                )
         }
     }
 }
 
 @Composable
-private fun BitmapLoader(
+private fun ImageContent(
+    apod: Apod,
     bitmapStatus: State<BitmapStatus>,
 ) {
     Box(
@@ -143,7 +128,8 @@ private fun BitmapLoader(
                     value.error,
                 )
             is BitmapStatus.Success ->
-                BitmapImage(
+                BitmapImageWithTitle(
+                    apod,
                     bitmap = value.bitmap.asImageBitmap(),
                 )
         }
@@ -151,25 +137,45 @@ private fun BitmapLoader(
 }
 
 @Composable
-private fun BitmapImage(
+private fun BitmapImageWithTitle(
+    apod: Apod,
     bitmap: ImageBitmap,
 ) {
     Box {
-        Image(
-            bitmap = bitmap,
-            contentDescription = "",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        Box {
+            Image(
+                bitmap = bitmap,
+                contentDescription = "",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+        ) {
+            Text(
+                text = "${apod.title} (${apod.date})",
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(Color.Transparent)
+                    .padding(bottom = 18.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                color = Color.Yellow,
+            )
+        }
     }
 }
 
 @Composable
-private fun TextContent(
+private fun UnsupportedMediaType(
     apod: Apod
 ) {
     Column {
         with(apod) {
+            Text(text = "The media type \"${apod.mediaType}\" is not yet supported")
             Text(text = title)
             Text(text = date)
             if (hasCopyrightInfo()) Text(text = copyrightInfo)
