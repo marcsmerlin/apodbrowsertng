@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModelFactory: ApodViewModelFactory
@@ -22,10 +23,12 @@ class MainActivity : AppCompatActivity() {
             ).get(ApodViewModel::class.java)
 
         setContent {
-            ApodBrowserApp(
-                apodViewModel = viewModel,
-                appContainer = appContainer,
-            )
+            ApodBrowserTheme {
+                ApodBrowserApp(
+                    viewModel = viewModel,
+                    appContainer = appContainer,
+                )
+            }
         }
     }
 }

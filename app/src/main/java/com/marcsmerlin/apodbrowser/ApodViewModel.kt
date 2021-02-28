@@ -7,14 +7,32 @@ import androidx.lifecycle.ViewModelProvider
 
 class ApodViewModel(
     private val repository: ApodRepository
-) : ViewModel(), IApodViewModel {
+) : ViewModel() {
 
-    private val _status = mutableStateOf<ApodStatus>(ApodLoading)
-    override val status: State<ApodStatus>
+    sealed class Status {
+        object Initializing : Status()
+        data class FailedToInitialize(
+            val error: Exception
+        ) : Status()
+        sealed class Result : Status() {
+            data class Success(
+                val apod: Apod,
+                val isHome: Boolean,
+                val hasNext: Boolean,
+                val hasPrevious: Boolean,
+            ) : Result()
+            data class Error(
+                val error: Exception
+            ) : Result()
+        }
+    }
+
+    private val _status = mutableStateOf<Status>(Status.Initializing)
+    val status: State<Status>
         get() = _status
 
     private fun apodListener(apod: Apod) {
-        _status.value = ApodSuccess(
+        _status.value = Status.Result.Success(
             apod = apod,
             isHome = repository.isHome(),
             hasNext = repository.hasNextDate(),
@@ -23,35 +41,37 @@ class ApodViewModel(
     }
 
     private fun errorListener(error: Exception) {
-        _status.value = ApodError(error)
+        _status.value = Status.Result.Error(error)
     }
 
     init {
-        goHome()
+        repository.queueHomeRequest(
+            ::apodListener,
+        ) { error -> _status.value = Status.FailedToInitialize(error) }
     }
 
-    override fun goHome() {
+    fun goHome() {
         repository.queueHomeRequest(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    override fun getNext() {
+    fun getNext() {
         repository.queueRequestForNextDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    override fun getPrevious() {
+    fun getPrevious() {
         repository.queueRequestForPreviousDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    override fun getRandom() {
+    fun getRandom() {
         repository.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,

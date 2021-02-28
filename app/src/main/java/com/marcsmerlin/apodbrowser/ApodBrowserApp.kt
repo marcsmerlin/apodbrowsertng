@@ -2,10 +2,12 @@ package com.marcsmerlin.apodbrowser
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -20,87 +22,105 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun ApodBrowserApp(
     appContainer: AppContainer,
-    apodViewModel: IApodViewModel,
+    viewModel: ApodViewModel,
 ) {
-    ApodBrowserTheme {
-        HomeScaffold(
-            apodStatus = apodViewModel.status,
-            bitmapLoader = appContainer.bitmapLoader,
-            getRandom = apodViewModel::getRandom,
-        )
+    when (val status = viewModel.status.value) {
+        ApodViewModel.Status.Initializing -> {
+            Text(text = "Initializing app\u2026")
+        }
+        is ApodViewModel.Status.FailedToInitialize -> {
+            Text(text = "Initialization error: $status.error")
+        }
+        is ApodViewModel.Status.Result ->
+            OperationalScreen(
+                result = status,
+                bitmapLoader = appContainer.bitmapLoader,
+                goHome = viewModel::goHome,
+                getRandom = viewModel::getRandom,
+            )
     }
 }
 
 @Composable
-private fun HomeScaffold(
-    apodStatus: State<ApodStatus>,
+private fun OperationalScreen(
+    result: ApodViewModel.Status.Result,
     bitmapLoader: IBitmapLoader,
+    goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
-    val scaffoldState = rememberScaffoldState()
+    when (result) {
+        is ApodViewModel.Status.Result.Error ->
+            Text(text = "Operational error: $result.error")
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            val title = "Apod Browser"
-            TopAppBar(
-                title = { Text(text = title) },
-            )
-        },
-        content = {
-            ScaffoldContent(
-                apodStatus = apodStatus,
-                bitmapLoader = bitmapLoader,
-                getRandom,
-            )
-        },
-    )
-}
+        is ApodViewModel.Status.Result.Success -> {
+            val scaffoldState = rememberScaffoldState()
 
-@Composable
-private fun ScaffoldContent(
-    apodStatus: State<ApodStatus>,
-    bitmapLoader: IBitmapLoader,
-    getRandom: () -> Unit,
-) {
-    Box(
-        Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when (val status = apodStatus.value) {
-            ApodLoading ->
-                Text(text = "Loading app\u2026")
-            is ApodError ->
-                ErrorAlert(
-                    title = "Error loading app",
-                    error = status.error
-                )
-            is ApodSuccess ->
-                ApodContent(
-                    apod = status.apod,
-                    bitmapLoader = bitmapLoader,
-                    getRandom,
-                )
+            Scaffold(
+                scaffoldState = scaffoldState,
+                topBar = {
+                    TopAppBarForSuccess(
+                        result = result,
+                        title = "Apod Browser",
+                        goHome = { goHome() },
+                        getRandom = { getRandom() })
+                },
+                content = {
+                    ApodContent(
+                        apod = result.apod,
+                        bitmapLoader = bitmapLoader,
+                    )
+                },
+            )
         }
     }
+
+}
+
+@Composable
+private fun TopAppBarForSuccess(
+    result: ApodViewModel.Status.Result.Success,
+    title: String,
+    goHome: () -> Unit,
+    getRandom: () -> Unit,
+) {
+    TopAppBar(
+        title = { Text(text = title) },
+        actions = {
+            IconButton(onClick = { goHome() }, enabled = !result.isHome) {
+                if (!result.isHome)
+                    Icon(
+                        Icons.Filled.Home,
+                        "Go home"
+                    )
+                else
+                    Icon(
+                        Icons.Filled.Home,
+                        "Go home",
+                        tint = Color.DarkGray
+                    )
+            }
+            IconButton(onClick = { getRandom() }) {
+                Icon(
+                    Icons.Filled.Refresh,
+                    contentDescription = "Get random photo"
+                )
+            }
+        }
+    )
 }
 
 @Composable
 private fun ApodContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
-    getRandom: () -> Unit
 ) {
-    Box(
-        Modifier.clickable { getRandom() }
-    ) {
+    Box {
         if (apod.isImage()) {
             ImageContent(
                 apod,
