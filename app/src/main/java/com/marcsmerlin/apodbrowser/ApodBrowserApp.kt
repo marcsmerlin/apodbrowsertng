@@ -2,7 +2,10 @@ package com.marcsmerlin.apodbrowser
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
@@ -14,11 +17,9 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
@@ -68,7 +69,7 @@ private fun HomeScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            HomeTopAppBar(
+            HomeScreenTopAppBar(
                 result = result,
                 goHome = { goHome() },
                 getRandom = { getRandom() },
@@ -76,7 +77,7 @@ private fun HomeScreen(
             )
         },
         content = {
-            ApodContent(
+            HomeScreenContent(
                 apod = result.apod,
                 bitmapLoader = bitmapLoader,
             )
@@ -85,7 +86,7 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun HomeTopAppBar(
+private fun HomeScreenTopAppBar(
     result: ApodViewModel.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
@@ -123,27 +124,61 @@ private fun HomeTopAppBar(
 }
 
 @Composable
-private fun ApodContent(
+private fun HomeScreenContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
 ) {
-    Box {
-        if (apod.isImage()) {
-            ImageContent(
-                apod,
-                bitmapLoader.queueRequest(apod.url),
+    val label = "${apod.title} (${apod.date})"
+
+    if (apod.isImage()) {
+        LabeledContent(label = label)
+        {
+            ImageMediaType(
+                bitmapStatus = bitmapLoader.queueRequest(apod.url),
             )
-        } else {
+        }
+
+    } else {
+        LabeledContent(label = label)
+        {
             UnsupportedMediaType(
-                apod = apod,
+                mediaType = apod.mediaType,
             )
         }
     }
 }
 
 @Composable
-private fun ImageContent(
-    apod: Apod,
+private fun LabeledContent(
+    label: String,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+                .background(backgroundColor.copy(alpha = 0.50f))
+        ) {
+            Text(
+                text = label,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                color = Color.Yellow,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageMediaType(
     bitmapStatus: State<BitmapStatus>,
 ) {
     Box(
@@ -160,61 +195,29 @@ private fun ImageContent(
                     value.error,
                 )
             is BitmapStatus.Success ->
-                BitmapImageWithTitle(
-                    apod,
+                Image(
                     bitmap = value.bitmap.asImageBitmap(),
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
         }
     }
 }
 
 @Composable
-private fun BitmapImageWithTitle(
-    apod: Apod,
-    bitmap: ImageBitmap,
+private fun UnsupportedMediaType(
+    mediaType: String
 ) {
     Box {
-        Box {
-            Image(
-                bitmap = bitmap,
-                contentDescription = "",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
         Box(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
-                .background(backgroundColor.copy(alpha = 0.50f))
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize(),
         ) {
             Text(
-                text = "${apod.title} (${apod.date})",
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(4.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-                color = Color.Yellow,
+                text = "The media type \"$mediaType\" is not supported.",
             )
         }
-    }
-}
-
-@Composable
-private fun UnsupportedMediaType(
-    apod: Apod
-) {
-    Column {
-        Text(text = "(Sorry, the media type \"${apod.mediaType}\" is not yet supported.)")
-        Spacer(modifier = Modifier.padding(12.dp))
-        Text(text = "${apod.title} (${apod.date})")
-        if (apod.hasCopyrightInfo()) Text(text = "Credit: ${apod.copyrightInfo}")
-        Text(
-            text = apod.explanation,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 
