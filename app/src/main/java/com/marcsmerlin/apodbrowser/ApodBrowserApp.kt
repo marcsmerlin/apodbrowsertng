@@ -11,8 +11,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
+import kotlin.system.exitProcess
 
 @Composable
 fun ApodBrowserApp(
@@ -37,18 +36,18 @@ fun ApodBrowserApp(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Initializing app\u2026")
+                Text(text = "Initializing\u2026")
             }
         }
-        is ApodViewModel.Status.FailedToInitialize -> {
-            ErrorAlert(
-                title = "Unable to initialize app",
+        is ApodViewModel.Status.Failed -> {
+            FatalErrorAlert(
+                title = "An unrecoverable error has occurred",
                 status.error
             )
         }
-        is ApodViewModel.Status.Result ->
-            OperationalScreen(
-                result = status,
+        is ApodViewModel.Status.Operational ->
+            HomeScreen(
+                result = viewModel.requestResult.value,
                 bitmapLoader = appContainer.bitmapLoader,
                 goHome = viewModel::goHome,
                 getRandom = viewModel::getRandom,
@@ -57,44 +56,37 @@ fun ApodBrowserApp(
 }
 
 @Composable
-private fun OperationalScreen(
-    result: ApodViewModel.Status.Result,
+private fun HomeScreen(
+    result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
     goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
-    when (result) {
-        is ApodViewModel.Status.Result.Error ->
-            Text(text = "Operational error: $result.error")
 
-        is ApodViewModel.Status.Result.Success -> {
-            val scaffoldState = rememberScaffoldState()
+    val scaffoldState = rememberScaffoldState()
 
-            Scaffold(
-                scaffoldState = scaffoldState,
-                topBar = {
-                    TopAppBarForSuccess(
-                        result = result,
-                        goHome = { goHome() },
-                        getRandom = { getRandom() },
-                        getInfo = {}
-                    )
-                },
-                content = {
-                    ApodContent(
-                        apod = result.apod,
-                        bitmapLoader = bitmapLoader,
-                    )
-                },
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            HomeTopAppBar(
+                result = result,
+                goHome = { goHome() },
+                getRandom = { getRandom() },
+                getInfo = {}
             )
-        }
-    }
-
+        },
+        content = {
+            ApodContent(
+                apod = result.apod,
+                bitmapLoader = bitmapLoader,
+            )
+        },
+    )
 }
 
 @Composable
-private fun TopAppBarForSuccess(
-    result: ApodViewModel.Status.Result.Success,
+private fun HomeTopAppBar(
+    result: ApodViewModel.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
     getInfo: () -> Unit,
@@ -163,7 +155,7 @@ private fun ImageContent(
                 Text(text = "Loading image\u2026")
 
             is BitmapStatus.Error ->
-                ErrorAlert(
+                FatalErrorAlert(
                     title = "An error has occurred loading the image",
                     value.error,
                 )
@@ -227,30 +219,23 @@ private fun UnsupportedMediaType(
 }
 
 @Composable
-private fun ErrorAlert(
+private fun FatalErrorAlert(
     title: String,
     error: Exception,
 ) {
-    val openDialog = remember { mutableStateOf(false) }
-
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = { openDialog.value = false },
-            title = {
-                Text(text = title)
-            },
-            text = {
-                Text(text = error.toString())
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                    }
-                ) {
-                    Text(text ="OK")
-                }
-            },
-        )
-    }
+    AlertDialog(
+        onDismissRequest = { exitProcess(1) },
+        title = {
+            Text(text = title)
+        },
+        text = {
+            Text(text = error.toString())
+        },
+        confirmButton = {
+            TextButton(onClick = { exitProcess(1) }
+            ) {
+                Text(text = "Quit")
+            }
+        },
+    )
 }

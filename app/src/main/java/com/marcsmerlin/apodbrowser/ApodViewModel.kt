@@ -1,5 +1,6 @@
 package com.marcsmerlin.apodbrowser
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,28 +12,27 @@ class ApodViewModel(
 
     sealed class Status {
         object Initializing : Status()
-        data class FailedToInitialize(
-            val error: Exception
-        ) : Status()
-        sealed class Result : Status() {
-            data class Success(
-                val apod: Apod,
-                val isHome: Boolean,
-                val hasNext: Boolean,
-                val hasPrevious: Boolean,
-            ) : Result()
-            data class Error(
-                val error: Exception
-            ) : Result()
-        }
+        data class Failed(val error: Exception) : Status()
+        object Operational : Status()
     }
+
+    data class Result(
+        val apod: Apod,
+        val isHome: Boolean,
+        val hasNext: Boolean,
+        val hasPrevious: Boolean,
+    )
 
     private val _status = mutableStateOf<Status>(Status.Initializing)
     val status: State<Status>
         get() = _status
 
+    private lateinit var _result: MutableState<Result>
+    val requestResult: State<Result>
+        get() = _result
+
     private fun apodListener(apod: Apod) {
-        _status.value = Status.Result.Success(
+        _result.value = Result(
             apod = apod,
             isHome = repository.isHome(),
             hasNext = repository.hasNextDate(),
@@ -41,13 +41,26 @@ class ApodViewModel(
     }
 
     private fun errorListener(error: Exception) {
-        _status.value = Status.Result.Error(error)
+        _status.value = Status.Failed(error)
     }
 
     init {
         repository.queueHomeRequest(
-            ::apodListener,
-        ) { error -> _status.value = Status.FailedToInitialize(error) }
+            { apod: Apod ->
+                _status.value = Status.Operational
+                _result = mutableStateOf(
+                    Result(
+                        apod = apod,
+                        isHome = repository.isHome(),
+                        hasNext = repository.hasNextDate(),
+                        hasPrevious = repository.hasPreviousDate(),
+                    )
+                )
+
+            },
+
+            ::errorListener,
+        )
     }
 
     fun goHome() {
