@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -32,10 +33,18 @@ fun ApodBrowserApp(
 ) {
     when (val status = viewModel.status.value) {
         ApodViewModel.Status.Initializing -> {
-            Text(text = "Initializing app\u2026")
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Initializing app\u2026")
+            }
         }
         is ApodViewModel.Status.FailedToInitialize -> {
-            Text(text = "Initialization error: $status.error")
+            ErrorAlert(
+                title = "Unable to initialize app",
+                status.error
+            )
         }
         is ApodViewModel.Status.Result ->
             OperationalScreen(
@@ -66,9 +75,10 @@ private fun OperationalScreen(
                 topBar = {
                     TopAppBarForSuccess(
                         result = result,
-                        title = "Apod Browser",
                         goHome = { goHome() },
-                        getRandom = { getRandom() })
+                        getRandom = { getRandom() },
+                        getInfo = {}
+                    )
                 },
                 content = {
                     ApodContent(
@@ -85,12 +95,12 @@ private fun OperationalScreen(
 @Composable
 private fun TopAppBarForSuccess(
     result: ApodViewModel.Status.Result.Success,
-    title: String,
     goHome: () -> Unit,
     getRandom: () -> Unit,
+    getInfo: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = title) },
+        title = { Text(text = "Apod Browser") },
         actions = {
             IconButton(onClick = { goHome() }, enabled = !result.isHome) {
                 if (!result.isHome)
@@ -111,8 +121,13 @@ private fun TopAppBarForSuccess(
                     contentDescription = "Get random photo"
                 )
             }
-        }
-    )
+            IconButton(onClick = { getInfo() }) {
+                Icon(
+                    Icons.Filled.Info,
+                    contentDescription = "Get image detail"
+                )
+            }
+        })
 }
 
 @Composable
@@ -149,7 +164,7 @@ private fun ImageContent(
 
             is BitmapStatus.Error ->
                 ErrorAlert(
-                    title = "Error loading image",
+                    title = "An error has occurred loading the image",
                     value.error,
                 )
             is BitmapStatus.Success ->
@@ -200,7 +215,7 @@ private fun UnsupportedMediaType(
     apod: Apod
 ) {
     Column {
-        Text(text = "(Media type \"${apod.mediaType}\" is not yet supported.)")
+        Text(text = "(Sorry, the media type \"${apod.mediaType}\" is not yet supported.)")
         Spacer(modifier = Modifier.padding(12.dp))
         Text(text = "${apod.title} (${apod.date})")
         if (apod.hasCopyrightInfo()) Text(text = "Credit: ${apod.copyrightInfo}")
@@ -233,7 +248,7 @@ private fun ErrorAlert(
                         openDialog.value = false
                     }
                 ) {
-                    Text("OK")
+                    Text(text ="OK")
                 }
             },
         )
