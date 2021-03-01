@@ -26,6 +26,7 @@ import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(
+    appName: String,
     result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
     goHome: () -> Unit,
@@ -37,15 +38,15 @@ fun HomeScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            HomeScreenTopBar(
+            ScaffoldTopBar(
+                appName = appName,
                 result = result,
                 goHome = { goHome() },
                 getRandom = { getRandom() },
-                getInfo = {}
             )
         },
         content = {
-            HomeScreenContent(
+            ScaffoldContent(
                 apod = result.apod,
                 bitmapLoader = bitmapLoader,
             )
@@ -54,58 +55,62 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeScreenTopBar(
+private fun ScaffoldTopBar(
+    appName: String,
     result: ApodViewModel.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
-    getInfo: () -> Unit,
+    getInfo: () -> Unit = {},
 ) {
     TopAppBar(
-        title = { Text(text = "Apod Browser") },
+        title = { Text(text = appName) },
         actions = {
             IconButton(onClick = { goHome() }, enabled = !result.isHome) {
+                val contentDescription = "Go home"
                 if (!result.isHome)
                     Icon(
                         Icons.Filled.Home,
-                        "Go home"
+                        contentDescription = contentDescription
                     )
                 else
                     Icon(
                         Icons.Filled.Home,
-                        "Go home",
+                        contentDescription = contentDescription,
                         tint = Color.DarkGray
                     )
             }
             IconButton(onClick = { getRandom() }) {
+                val contentDescription = "Get random APOD"
                 Icon(
                     Icons.Filled.Refresh,
-                    contentDescription = "Get random photo"
+                    contentDescription = contentDescription
                 )
             }
             IconButton(onClick = { getInfo() }) {
+                val contentDescription = "Get APOD detail"
                 Icon(
                     Icons.Filled.Info,
-                    contentDescription = "Get image detail"
+                    contentDescription = contentDescription
                 )
             }
         })
 }
 
 @Composable
-private fun HomeScreenContent(
+private fun ScaffoldContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
 ) {
     val label = "${apod.title} (${apod.date})"
 
     if (apod.isImage()) {
-        LabeledContent(label = label) {
-            ImageMediaType(
+        ContentWithLabel(label = label) {
+            NetworkBitmap(
                 bitmapStatus = bitmapLoader.queueRequest(apod.url),
             )
         }
     } else {
-        LabeledContent(label = label) {
+        ContentWithLabel(label = label) {
             UnsupportedMediaType(
                 mediaType = apod.mediaType,
             )
@@ -114,7 +119,7 @@ private fun HomeScreenContent(
 }
 
 @Composable
-private fun LabeledContent(
+private fun ContentWithLabel(
     label: String,
     content: @Composable () -> Unit,
 ) {
@@ -143,7 +148,7 @@ private fun LabeledContent(
 }
 
 @Composable
-private fun ImageMediaType(
+private fun NetworkBitmap(
     bitmapStatus: State<BitmapStatus>,
 ) {
     Box(

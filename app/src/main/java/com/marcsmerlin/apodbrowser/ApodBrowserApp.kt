@@ -8,6 +8,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import kotlin.system.exitProcess
 
 @Composable
@@ -15,6 +16,8 @@ fun ApodBrowserApp(
     appContainer: AppContainer,
     viewModel: ApodViewModel,
 ) {
+    val appName = stringResource(id = R.string.app_name)
+
     when (val status = viewModel.status.value) {
         ApodViewModel.Status.Initializing -> {
             Box(
@@ -26,12 +29,12 @@ fun ApodBrowserApp(
         }
         is ApodViewModel.Status.Failed -> {
             UnrecoverableErrorAlert(
-                title = "An unrecoverable error has occurred",
                 status.error
             )
         }
         is ApodViewModel.Status.Operational ->
             HomeScreen(
+                appName = appName,
                 result = viewModel.requestResult.value,
                 bitmapLoader = appContainer.bitmapLoader,
                 goHome = viewModel::goHome,
@@ -42,13 +45,12 @@ fun ApodBrowserApp(
 
 @Composable
 private fun UnrecoverableErrorAlert(
-    title: String,
     error: Exception,
 ) {
     AlertDialog(
         onDismissRequest = { exitProcess(1) },
         title = {
-            Text(text = title)
+            Text(text = "An unrecoverable error has occurred")
         },
         text = {
             Text(text = error.toString())
