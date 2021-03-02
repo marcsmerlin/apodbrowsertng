@@ -21,18 +21,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
     appName: String,
     result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
     goHome: () -> Unit,
     getRandom: () -> Unit,
+    getDetail: () -> Unit,
 ) {
 
     val scaffoldState = rememberScaffoldState()
@@ -45,6 +44,7 @@ fun HomeScreen(
                 result = result,
                 goHome = { goHome() },
                 getRandom = { getRandom() },
+                getDetail = { getDetail() }
             )
         },
         content = {
@@ -62,7 +62,7 @@ private fun ScaffoldTopBar(
     result: ApodViewModel.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
-    getInfo: () -> Unit = {},
+    getDetail: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(text = appName) },
@@ -88,7 +88,7 @@ private fun ScaffoldTopBar(
                     contentDescription = contentDescription
                 )
             }
-            IconButton(onClick = { getInfo() }) {
+            IconButton(onClick = { getDetail() }) {
                 val contentDescription = "Get APOD detail"
                 Icon(
                     Icons.Filled.Info,

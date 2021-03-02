@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 // import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import kotlin.system.exitProcess
 
@@ -38,24 +38,24 @@ fun ApodBrowserApp(
             )
         }
         is ApodViewModel.Status.Operational -> {
-            val navHostController = rememberNavController()
 
-            ApodBrowserNavigation(
+            ApodBrowserNavigator(
                 appContainer = appContainer,
                 viewModel = viewModel,
                 appName = appName,
-                navHostController = navHostController)
+            )
         }
     }
 }
 
 @Composable
-private fun ApodBrowserNavigation(
+private fun ApodBrowserNavigator(
     appContainer: AppContainer,
     viewModel: ApodViewModel,
     appName: String,
-    navHostController: NavHostController,
 ) {
+    val navHostController = rememberNavController()
+
     NavHost(
         navController = navHostController,
         startDestination = "home",
@@ -63,12 +63,18 @@ private fun ApodBrowserNavigation(
 
         composable("home") {
             HomeScreen(
-                navController = navHostController,
                 appName = appName,
                 result = viewModel.requestResult.value,
                 bitmapLoader = appContainer.bitmapLoader,
                 goHome = viewModel::goHome,
                 getRandom = viewModel::getRandom,
+                getDetail = { navHostController.navigate("detail") },
+            )
+        }
+
+        composable("detail") {
+            DetailScreen(
+                apod = viewModel.requestResult.value.apod,
             )
         }
     }
