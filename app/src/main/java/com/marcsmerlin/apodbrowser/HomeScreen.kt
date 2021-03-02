@@ -66,7 +66,7 @@ private fun ScaffoldTopBar(
 ) {
     TopAppBar(
         title = { Text(text = appName) },
-        actions = {
+        navigationIcon = {
             IconButton(onClick = { goHome() }, enabled = !result.isHome) {
                 val contentDescription = "Go home"
                 if (!result.isHome)
@@ -81,6 +81,8 @@ private fun ScaffoldTopBar(
                         tint = Color.DarkGray
                     )
             }
+        },
+        actions = {
             IconButton(onClick = { getRandom() }) {
                 val contentDescription = "Get random APOD"
                 Icon(
@@ -106,14 +108,14 @@ private fun ScaffoldContent(
     val label = "${apod.title} (${apod.date})"
 
     if (apod.isImage()) {
-        ContentWithLabelOverlay(label = label) {
-            NetworkBitmap(
+        LabeledContent(label = label) {
+            BitmapTracker(
                 bitmapStatus = bitmapLoader.queueRequest(apod.url),
             )
         }
     } else {
-        ContentWithLabelOverlay(label = label) {
-            UnsupportedMediaType(
+        LabeledContent(label = label) {
+            UnsupportedMediaTypeNotice(
                 mediaType = apod.mediaType,
             )
         }
@@ -121,20 +123,20 @@ private fun ScaffoldContent(
 }
 
 @Composable
-private fun ContentWithLabelOverlay(
+private fun LabeledContent(
     label: String,
-    content: @Composable () -> Unit,
+    contentToLabel: @Composable () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        content()
+        contentToLabel()
         Box(
             Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 24.dp)
-                .background(SnackbarDefaults.backgroundColor.copy(alpha = 0.50f))
+                .background(MaterialTheme.colors.surface.copy(alpha = 0.67f))
         ) {
             Text(
                 text = label,
@@ -143,14 +145,13 @@ private fun ContentWithLabelOverlay(
                     .padding(4.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp,
-                color = Color.Yellow,
             )
         }
     }
 }
 
 @Composable
-private fun NetworkBitmap(
+private fun BitmapTracker(
     bitmapStatus: State<BitmapStatus>,
 ) {
     Box(
@@ -162,7 +163,7 @@ private fun NetworkBitmap(
                 Text(text = "Loading image\u2026")
 
             is BitmapStatus.Error ->
-                Text(text = "An error has occurred loading image:\n${value.error}")
+                Text(text = "An error has occurred loading bitmap:\n${value.error}")
 
             is BitmapStatus.Success ->
                 Image(
@@ -176,7 +177,7 @@ private fun NetworkBitmap(
 }
 
 @Composable
-private fun UnsupportedMediaType(
+private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
     Box(

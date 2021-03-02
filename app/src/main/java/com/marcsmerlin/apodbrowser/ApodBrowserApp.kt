@@ -74,7 +74,9 @@ private fun ApodBrowserNavigator(
 
         composable("detail") {
             DetailScreen(
+                appName = appName,
                 apod = viewModel.requestResult.value.apod,
+                goBack = { navHostController.popBackStack() }
             )
         }
     }
