@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Apod Browser</string>
+    <string name="app_title">Random APOD</string>
 </resources>

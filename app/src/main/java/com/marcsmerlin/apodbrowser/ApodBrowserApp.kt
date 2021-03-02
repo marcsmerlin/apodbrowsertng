@@ -21,7 +21,7 @@ fun ApodBrowserApp(
     appContainer: AppContainer,
     viewModel: ApodViewModel,
 ) {
-    val appName = stringResource(id = R.string.app_name)
+    val appTitle = stringResource(id = R.string.app_title)
 
     when (val status = viewModel.status.value) {
         ApodViewModel.Status.Initializing -> {
@@ -29,7 +29,7 @@ fun ApodBrowserApp(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Initializing $appName\u2026")
+                Text(text = "Initializing $appTitle\u2026")
             }
         }
         is ApodViewModel.Status.Failed -> {
@@ -42,7 +42,7 @@ fun ApodBrowserApp(
             ApodBrowserNavigator(
                 appContainer = appContainer,
                 viewModel = viewModel,
-                appName = appName,
+                appTitle = appTitle,
             )
         }
     }
@@ -52,7 +52,7 @@ fun ApodBrowserApp(
 private fun ApodBrowserNavigator(
     appContainer: AppContainer,
     viewModel: ApodViewModel,
-    appName: String,
+    appTitle: String,
 ) {
     val navHostController = rememberNavController()
 
@@ -63,7 +63,7 @@ private fun ApodBrowserNavigator(
 
         composable("home") {
             HomeScreen(
-                appName = appName,
+                appTitle = appTitle,
                 result = viewModel.requestResult.value,
                 bitmapLoader = appContainer.bitmapLoader,
                 goHome = viewModel::goHome,
@@ -74,7 +74,7 @@ private fun ApodBrowserNavigator(
 
         composable("detail") {
             DetailScreen(
-                appName = appName,
+                appTitle = appTitle,
                 apod = viewModel.requestResult.value.apod,
                 goBack = { navHostController.popBackStack() }
             )

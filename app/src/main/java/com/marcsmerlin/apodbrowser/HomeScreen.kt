@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -26,7 +27,7 @@ import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(
-    appName: String,
+    appTitle: String,
     result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
     goHome: () -> Unit,
@@ -40,7 +41,7 @@ fun HomeScreen(
         scaffoldState = scaffoldState,
         topBar = {
             ScaffoldTopBar(
-                appName = appName,
+                appName = appTitle,
                 result = result,
                 goHome = { goHome() },
                 getRandom = { getRandom() },
@@ -67,8 +68,24 @@ private fun ScaffoldTopBar(
     TopAppBar(
         title = { Text(text = appName) },
         navigationIcon = {
+            IconButton(onClick = { getDetail() }) {
+                val contentDescription = "Show APOD detail"
+                Icon(
+                    Icons.Filled.Info,
+                    contentDescription = contentDescription
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { getRandom() }) {
+                val contentDescription = "Fetch random APOD"
+                Icon(
+                    Icons.Filled.Refresh,
+                    contentDescription = contentDescription
+                )
+            }
             IconButton(onClick = { goHome() }, enabled = !result.isHome) {
-                val contentDescription = "Go home"
+                val contentDescription = "Go to APOD home"
                 if (!result.isHome)
                     Icon(
                         Icons.Filled.Home,
@@ -81,22 +98,6 @@ private fun ScaffoldTopBar(
                         tint = Color.DarkGray
                     )
             }
-        },
-        actions = {
-            IconButton(onClick = { getRandom() }) {
-                val contentDescription = "Get random APOD"
-                Icon(
-                    Icons.Filled.Refresh,
-                    contentDescription = contentDescription
-                )
-            }
-            IconButton(onClick = { getDetail() }) {
-                val contentDescription = "Get APOD detail"
-                Icon(
-                    Icons.Filled.Info,
-                    contentDescription = contentDescription
-                )
-            }
         })
 }
 
@@ -108,22 +109,18 @@ private fun ScaffoldContent(
     val label = "${apod.title} (${apod.date})"
 
     if (apod.isImage()) {
-        LabeledContent(label = label) {
-            BitmapTracker(
-                bitmapStatus = bitmapLoader.queueRequest(apod.url),
-            )
+        ContentWithLabel(label = label) {
+            BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
         }
     } else {
-        LabeledContent(label = label) {
-            UnsupportedMediaTypeNotice(
-                mediaType = apod.mediaType,
-            )
+        ContentWithLabel(label = label) {
+            UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
         }
     }
 }
 
 @Composable
-private fun LabeledContent(
+private fun ContentWithLabel(
     label: String,
     contentToLabel: @Composable () -> Unit,
 ) {
@@ -133,16 +130,19 @@ private fun LabeledContent(
     ) {
         contentToLabel()
         Box(
-            Modifier
+            modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
-                .background(MaterialTheme.colors.surface.copy(alpha = 0.67f))
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
+                .background(
+                    color = MaterialTheme.colors.surface.copy(alpha = 0.40f),
+                    shape = RoundedCornerShape(8.dp),
+                ),
         ) {
             Text(
                 text = label,
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(4.dp),
+                    .padding(all = 6.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp,
             )
@@ -151,28 +151,23 @@ private fun LabeledContent(
 }
 
 @Composable
-private fun BitmapTracker(
+private fun BitmapDownloadTracker(
     bitmapStatus: State<BitmapStatus>,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when (val value = bitmapStatus.value) {
-            BitmapStatus.Loading ->
-                Text(text = "Loading image\u2026")
+    when (val value = bitmapStatus.value) {
+        BitmapStatus.Loading ->
+            Text(text = "Loading image\u2026")
 
-            is BitmapStatus.Error ->
-                Text(text = "An error has occurred loading bitmap:\n${value.error}")
+        is BitmapStatus.Error ->
+            Text(text = "Error downloading image:\n${value.error}")
 
-            is BitmapStatus.Success ->
-                Image(
-                    bitmap = value.bitmap.asImageBitmap(),
-                    contentDescription = "",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-        }
+        is BitmapStatus.Success ->
+            Image(
+                bitmap = value.bitmap.asImageBitmap(),
+                contentDescription = "Download image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
     }
 }
 
@@ -180,12 +175,5 @@ private fun BitmapTracker(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        Text(
-            text = "The media type \"$mediaType\" is not supported.",
-        )
-    }
+    Text(text = "The media type \"$mediaType\" is not supported.",)
 }

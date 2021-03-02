@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DetailScreen(
-    appName: String,
+    appTitle: String,
     apod: Apod,
     goBack: () -> Unit,
 ) {
@@ -23,7 +23,7 @@ fun DetailScreen(
             scaffoldState = scaffoldState,
             topBar = {
                 ScaffoldTopBar(
-                    title = appName,
+                    title = appTitle,
                     goBack = { goBack() })
             },
             content = {
