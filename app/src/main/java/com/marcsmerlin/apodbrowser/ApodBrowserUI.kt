@@ -14,12 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import com.marcsmerlin.apodbrowser.utils.BitmapLoader
+import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 import kotlin.system.exitProcess
 
 @Composable
-fun ApodBrowserApp(
-    appContainer: AppContainer,
+fun ApodBrowserUI(
     viewModel: ApodViewModel,
+    bitmapLoader: IBitmapLoader,
 ) {
     val appTitle = stringResource(id = R.string.app_title)
 
@@ -40,8 +42,8 @@ fun ApodBrowserApp(
         is ApodViewModel.Status.Operational -> {
 
             ApodBrowserNavigator(
-                appContainer = appContainer,
                 viewModel = viewModel,
+                bitmapLoader = bitmapLoader,
                 appTitle = appTitle,
             )
         }
@@ -50,8 +52,8 @@ fun ApodBrowserApp(
 
 @Composable
 private fun ApodBrowserNavigator(
-    appContainer: AppContainer,
     viewModel: ApodViewModel,
+    bitmapLoader: IBitmapLoader,
     appTitle: String,
 ) {
     val navHostController = rememberNavController()
@@ -65,7 +67,7 @@ private fun ApodBrowserNavigator(
             HomeScreen(
                 appTitle = appTitle,
                 result = viewModel.requestResult.value,
-                bitmapLoader = appContainer.bitmapLoader,
+                bitmapLoader = bitmapLoader,
                 goHome = viewModel::goHome,
                 getRandom = viewModel::getRandom,
                 getDetail = { navHostController.navigate("detail") },

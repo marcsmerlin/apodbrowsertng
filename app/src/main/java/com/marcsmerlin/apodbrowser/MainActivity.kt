@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModelFactory: ApodViewModelFactory
     private lateinit var viewModel: ApodViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,18 +14,16 @@ class MainActivity : AppCompatActivity() {
 
         val appContainer = (application as ApodBrowserApplication).container
 
-        viewModelFactory = ApodViewModelFactory(appContainer.apodRepository)
-        viewModel =
-            ViewModelProvider(
-                this,
-                viewModelFactory
-            ).get(ApodViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this,
+            appContainer.viewModelFactory
+        ).get(ApodViewModel::class.java)
 
         setContent {
             ApodBrowserTheme {
-                ApodBrowserApp(
+                ApodBrowserUI(
                     viewModel = viewModel,
-                    appContainer = appContainer,
+                    bitmapLoader = appContainer.bitmapLoader,
                 )
             }
         }
