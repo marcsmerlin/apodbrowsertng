@@ -21,11 +21,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.marcsmerlin.apodbrowser.utils.BitmapStatus
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     appName: String,
     result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
@@ -104,13 +106,13 @@ private fun ScaffoldContent(
     val label = "${apod.title} (${apod.date})"
 
     if (apod.isImage()) {
-        ContentWithLabel(label = label) {
+        ContentWithLabelOverlay(label = label) {
             NetworkBitmap(
                 bitmapStatus = bitmapLoader.queueRequest(apod.url),
             )
         }
     } else {
-        ContentWithLabel(label = label) {
+        ContentWithLabelOverlay(label = label) {
             UnsupportedMediaType(
                 mediaType = apod.mediaType,
             )
@@ -119,7 +121,7 @@ private fun ScaffoldContent(
 }
 
 @Composable
-private fun ContentWithLabel(
+private fun ContentWithLabelOverlay(
     label: String,
     content: @Composable () -> Unit,
 ) {

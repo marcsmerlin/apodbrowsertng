@@ -62,4 +62,7 @@ dependencies {
     def lifecycle_version = "2.3.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
+    // Compose navigation dependency
+    def navigation_compose_version = "1.0.0-alpha08"
+    implementation "androidx.navigation:navigation-compose:$navigation_compose_version"
 }
