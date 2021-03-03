@@ -2,15 +2,13 @@ package com.marcsmerlin.apod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -45,13 +43,13 @@ fun HomeScreen(
                 result = result,
                 goHome = { goHome() },
                 getRandom = { getRandom() },
-                getDetail = { getDetail() }
             )
         },
         content = {
             ScaffoldContent(
                 apod = result.apod,
                 bitmapLoader = bitmapLoader,
+                getDetail = { getDetail() },
             )
         },
     )
@@ -63,22 +61,24 @@ private fun ScaffoldTopBar(
     result: ApodViewModel.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
-    getDetail: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(text = appName) },
         navigationIcon = {
-            IconButton(onClick = { getDetail() }) {
-                val contentDescription = "Show APOD detail"
+            IconButton(
+                onClick = {},
+                enabled = false
+            ) {
+                val contentDescription = "Menu"
                 Icon(
-                    Icons.Filled.Info,
+                    Icons.Filled.Menu,
                     contentDescription = contentDescription
                 )
             }
         },
         actions = {
             IconButton(onClick = { getRandom() }) {
-                val contentDescription = "Fetch random APOD"
+                val contentDescription = "Get random APOD"
                 Icon(
                     Icons.Filled.Refresh,
                     contentDescription = contentDescription
@@ -105,6 +105,7 @@ private fun ScaffoldTopBar(
 private fun ScaffoldContent(
     apod: Apod,
     bitmapLoader: IBitmapLoader,
+    getDetail: () -> Unit,
 ) {
     val label = "${apod.title} (${apod.date})"
 
@@ -117,13 +118,30 @@ private fun ScaffoldContent(
             UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
         }
     }
+
+    FloatingActionButton(
+        onClick = { getDetail() },
+        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.50f),
+        modifier = Modifier
+            .padding(
+                top = 18.dp,
+                start = 8.dp
+            )
+            .size(42.dp)
+    ) {
+        Icon(
+            Icons.Filled.Info,
+            contentDescription = "Show Apod detail"
+        )
+    }
 }
 
 @Composable
 private fun ContentWithLabel(
     label: String,
     contentToLabel: @Composable () -> Unit,
-) {
+
+    ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -134,7 +152,7 @@ private fun ContentWithLabel(
                 .align(Alignment.BottomCenter)
                 .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
                 .background(
-                    color = MaterialTheme.colors.surface.copy(alpha = 0.40f),
+                    color = MaterialTheme.colors.surface.copy(alpha = 0.50f),
                     shape = RoundedCornerShape(8.dp),
                 ),
         ) {
@@ -175,5 +193,5 @@ private fun BitmapDownloadTracker(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    Text(text = "The media type \"$mediaType\" is not supported.",)
+    Text(text = "The media type \"$mediaType\" is not supported.")
 }
