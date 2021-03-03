@@ -6,33 +6,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class ApodViewModel(
+class ApodModelViewImpl(
     private val repository: ApodRepository
-) : ViewModel() {
+) : ViewModel(), ApodModelView {
 
-    sealed class Status {
-        object Initializing : Status()
-        data class Failed(val error: Exception) : Status()
-        object Operational : Status()
-    }
-
-    data class Result(
-        val apod: Apod,
-        val isHome: Boolean,
-        val hasNext: Boolean,
-        val hasPrevious: Boolean,
-    )
-
-    private val _status = mutableStateOf<Status>(Status.Initializing)
-    val status: State<Status>
+    private val _status = mutableStateOf<ApodModelView.Status>(ApodModelView.Status.Initializing)
+    override val status: State<ApodModelView.Status>
         get() = _status
 
-    private lateinit var _result: MutableState<Result>
-    val requestResult: State<Result>
+    private lateinit var _result: MutableState<ApodModelView.Result>
+    override val requestResult: State<ApodModelView.Result>
         get() = _result
 
     private fun apodListener(apod: Apod) {
-        _result.value = Result(
+        _result.value = ApodModelView.Result(
             apod = apod,
             isHome = repository.isHome(),
             hasNext = repository.hasNextDate(),
@@ -41,50 +28,49 @@ class ApodViewModel(
     }
 
     private fun errorListener(error: Exception) {
-        _status.value = Status.Failed(error)
+        _status.value = ApodModelView.Status.Failed(error)
     }
 
     init {
         repository.queueHomeRequest(
             { apod: Apod ->
-                _status.value = Status.Operational
+                _status.value = ApodModelView.Status.Operational
                 _result = mutableStateOf(
-                    Result(
+                    ApodModelView.Result(
                         apod = apod,
                         isHome = repository.isHome(),
                         hasNext = repository.hasNextDate(),
                         hasPrevious = repository.hasPreviousDate(),
                     )
                 )
-
             },
 
             ::errorListener,
         )
     }
 
-    fun goHome() {
+    override fun goHome() {
         repository.queueHomeRequest(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getNext() {
+    override fun getNext() {
         repository.queueRequestForNextDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getPrevious() {
+    override fun getPrevious() {
         repository.queueRequestForPreviousDate(
             ::apodListener,
             ::errorListener,
         )
     }
 
-    fun getRandom() {
+    override fun getRandom() {
         repository.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,
@@ -103,9 +89,9 @@ class ApodViewModelFactory(
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ApodViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(ApodModelViewImpl::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ApodViewModel(repository = repository) as T
+            return ApodModelViewImpl(repository = repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

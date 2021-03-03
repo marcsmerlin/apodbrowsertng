@@ -7,22 +7,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.marcsmerlin.apodbrowser.ui.theme.ApodBrowserTheme
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: ApodViewModel
+    private lateinit var modelViewImpl: ApodModelViewImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val appContainer = (application as ApodBrowserApplication).container
 
-        viewModel = ViewModelProvider(
+        modelViewImpl = ViewModelProvider(
             this,
             appContainer.viewModelFactory
-        ).get(ApodViewModel::class.java)
+        ).get(ApodModelViewImpl::class.java)
 
         setContent {
             ApodBrowserTheme {
                 ApodBrowserUI(
-                    viewModel = viewModel,
+                    modelViewImpl = modelViewImpl,
                     bitmapLoader = appContainer.bitmapLoader,
                 )
             }

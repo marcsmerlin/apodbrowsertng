@@ -28,7 +28,7 @@ import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 @Composable
 fun HomeScreen(
     appTitle: String,
-    result: ApodViewModel.Result,
+    result: ApodModelView.Result,
     bitmapLoader: IBitmapLoader,
     goHome: () -> Unit,
     getRandom: () -> Unit,
@@ -60,7 +60,7 @@ fun HomeScreen(
 @Composable
 private fun ScaffoldTopBar(
     appName: String,
-    result: ApodViewModel.Result,
+    result: ApodModelView.Result,
     goHome: () -> Unit,
     getRandom: () -> Unit,
     getDetail: () -> Unit,
