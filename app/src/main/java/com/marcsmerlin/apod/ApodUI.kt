@@ -18,14 +18,14 @@ import kotlin.system.exitProcess
 
 @Composable
 fun ApodUI(
-    modelViewImpl: ApodModelViewImpl,
+    viewModel: ApodViewModel,
     bitmapLoader: IBitmapLoader,
 ) {
     val appTitle = stringResource(id = R.string.app_title)
 
-    when (val status = modelViewImpl.status.value) {
+    when (val status = viewModel.status.value) {
 
-        ApodModelView.Status.Initializing -> {
+        ApodViewModel.Status.Initializing -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -33,15 +33,15 @@ fun ApodUI(
                 Text(text = "Initializing $appTitle\u2026")
             }
         }
-        is ApodModelView.Status.Failed -> {
+        is ApodViewModel.Status.Failed -> {
             UnrecoverableErrorAlert(
                 status.error
             )
         }
-        is ApodModelView.Status.Operational -> {
+        is ApodViewModel.Status.Operational -> {
 
             ApodBrowserNavigator(
-                modelViewImpl = modelViewImpl,
+                viewModelImpl = viewModel,
                 bitmapLoader = bitmapLoader,
                 appTitle = appTitle,
             )
@@ -51,7 +51,7 @@ fun ApodUI(
 
 @Composable
 private fun ApodBrowserNavigator(
-    modelViewImpl: ApodModelView,
+    viewModelImpl: ApodViewModel,
     bitmapLoader: IBitmapLoader,
     appTitle: String,
 ) {
@@ -65,10 +65,10 @@ private fun ApodBrowserNavigator(
         composable("home") {
             HomeScreen(
                 appTitle = appTitle,
-                result = modelViewImpl.requestResult.value,
+                result = viewModelImpl.requestResult.value,
                 bitmapLoader = bitmapLoader,
-                goHome = modelViewImpl::goHome,
-                getRandom = modelViewImpl::getRandom,
+                goHome = viewModelImpl::goHome,
+                getRandom = viewModelImpl::getRandom,
                 getDetail = { navHostController.navigate("detail") },
             )
         }
@@ -76,7 +76,7 @@ private fun ApodBrowserNavigator(
         composable("detail") {
             DetailScreen(
                 appTitle = appTitle,
-                apod = modelViewImpl.requestResult.value.apod,
+                apod = viewModelImpl.requestResult.value.apod,
                 goBack = { navHostController.popBackStack() }
             )
         }

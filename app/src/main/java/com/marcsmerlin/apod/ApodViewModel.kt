@@ -2,7 +2,7 @@ package com.marcsmerlin.apod
 
 import androidx.compose.runtime.State
 
-interface ApodModelView {
+interface ApodViewModel {
     val status: State<Status>
     val requestResult: State<Result>
 
