@@ -9,12 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-// import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
-import com.marcsmerlin.apodbrowser.utils.BitmapLoader
 import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
 import kotlin.system.exitProcess
 
@@ -26,6 +24,7 @@ fun ApodBrowserUI(
     val appTitle = stringResource(id = R.string.app_title)
 
     when (val status = viewModel.status.value) {
+
         ApodViewModel.Status.Initializing -> {
             Box(
                 modifier = Modifier.fillMaxSize(),

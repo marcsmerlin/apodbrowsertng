@@ -26,6 +26,7 @@ class AppContainerImpl(
                 firstDate = "1995-06-16",
             )
         }
+
         viewModelFactory = ApodViewModelFactory(apodRepository)
     }
 
@@ -36,5 +37,4 @@ class AppContainerImpl(
             )
         )
     }
-
 }
