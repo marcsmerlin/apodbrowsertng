@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser.utils
+package com.marcsmerlin.apod.utils
 
 interface IStringQueue {
 

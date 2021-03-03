@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser
+package com.marcsmerlin.apod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,8 +22,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.marcsmerlin.apodbrowser.utils.BitmapStatus
-import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
+import com.marcsmerlin.apod.utils.BitmapStatus
+import com.marcsmerlin.apod.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(

@@ -1,10 +1,10 @@
-package com.marcsmerlin.apodbrowser
+package com.marcsmerlin.apod
 
 import android.content.Context
-import com.marcsmerlin.apodbrowser.utils.BitmapLoader
-import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
-import com.marcsmerlin.apodbrowser.utils.VolleyBitmapQueue
-import com.marcsmerlin.apodbrowser.utils.VolleyStringQueue
+import com.marcsmerlin.apod.utils.BitmapLoader
+import com.marcsmerlin.apod.utils.IBitmapLoader
+import com.marcsmerlin.apod.utils.VolleyBitmapQueue
+import com.marcsmerlin.apod.utils.VolleyStringQueue
 
 interface AppContainer {
     val viewModelFactory: ApodViewModelFactory

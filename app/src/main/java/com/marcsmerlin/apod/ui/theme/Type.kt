@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser.ui.theme
+package com.marcsmerlin.apod.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

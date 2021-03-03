@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser.ui.theme
+package com.marcsmerlin.apod.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

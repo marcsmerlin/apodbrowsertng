@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser
+package com.marcsmerlin.apod
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,11 +13,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
-import com.marcsmerlin.apodbrowser.utils.IBitmapLoader
+import com.marcsmerlin.apod.utils.IBitmapLoader
 import kotlin.system.exitProcess
 
 @Composable
-fun ApodBrowserUI(
+fun ApodUI(
     modelViewImpl: ApodModelViewImpl,
     bitmapLoader: IBitmapLoader,
 ) {

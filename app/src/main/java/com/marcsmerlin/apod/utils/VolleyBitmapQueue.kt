@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser.utils
+package com.marcsmerlin.apod.utils
 
 import android.content.Context
 import android.graphics.Bitmap

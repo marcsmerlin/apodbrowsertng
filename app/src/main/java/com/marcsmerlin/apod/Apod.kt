@@ -1,4 +1,4 @@
-package com.marcsmerlin.apodbrowser
+package com.marcsmerlin.apod
 
 import org.json.JSONObject
 import java.time.LocalDate
