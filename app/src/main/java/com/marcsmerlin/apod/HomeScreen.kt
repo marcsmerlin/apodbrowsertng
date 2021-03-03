@@ -32,7 +32,6 @@ fun HomeScreen(
     getRandom: () -> Unit,
     getDetail: () -> Unit,
 ) {
-
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(
@@ -111,39 +110,31 @@ private fun ScaffoldContent(
         modifier = Modifier.fillMaxSize(),
     ) {
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-        ) {
-            if (apod.isImage()) {
-                BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
-            } else {
-                UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
-
-            }
+        if (apod.isImage()) {
+            BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
+        } else {
+            UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
         }
 
-        Box(
+        val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.66f)
+
+        Text(
+            text = "${apod.title} (${apod.date})",
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
-        ) {
-            Text(
-                text = "${apod.title} (${apod.date})",
-                modifier = Modifier
-                    .padding(4.dp)
-                    .background(
-                        color = MaterialTheme.colors.surface.copy(alpha = 0.50f),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-            )
-        }
+                .padding(bottom = 18.dp)
+                .background(
+                    color = overlayBackground,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(8.dp),
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp,
+        )
 
         FloatingActionButton(
             onClick = { getDetail() },
-            backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.50f),
+            backgroundColor = overlayBackground,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(
@@ -154,10 +145,9 @@ private fun ScaffoldContent(
         ) {
             Icon(
                 Icons.Filled.Info,
-                contentDescription = "Show Apod detail"
+                contentDescription = "Show Apod detail",
             )
         }
-
     }
 }
 
@@ -165,20 +155,31 @@ private fun ScaffoldContent(
 private fun BitmapDownloadTracker(
     bitmapStatus: State<BitmapStatus>,
 ) {
-    when (val value = bitmapStatus.value) {
-        BitmapStatus.Loading ->
-            Text(text = "Loading image\u2026")
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val value = bitmapStatus.value) {
+            BitmapStatus.Loading ->
+                Text(
+                    text = "Loading image\u2026",
+                    textAlign = TextAlign.Center,
+                )
 
-        is BitmapStatus.Error ->
-            Text(text = "Error downloading image:\n${value.error}")
+            is BitmapStatus.Error ->
+                Text(
+                    text = "Error downloading image:\n${value.error}",
+                    textAlign = TextAlign.Center,
+                )
 
-        is BitmapStatus.Success ->
-            Image(
-                bitmap = value.bitmap.asImageBitmap(),
-                contentDescription = "Download image",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            is BitmapStatus.Success ->
+                Image(
+                    bitmap = value.bitmap.asImageBitmap(),
+                    contentDescription = "Download image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+        }
     }
 }
 
@@ -186,5 +187,13 @@ private fun BitmapDownloadTracker(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    Text(text = "The media type \"$mediaType\" is not supported.")
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "The media type \"$mediaType\" is not supported.",
+            textAlign = TextAlign.Center,
+        )
+    }
 }
