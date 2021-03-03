@@ -107,64 +107,57 @@ private fun ScaffoldContent(
     bitmapLoader: IBitmapLoader,
     getDetail: () -> Unit,
 ) {
-    val label = "${apod.title} (${apod.date})"
-
-    if (apod.isImage()) {
-        ContentWithLabel(label = label) {
-            BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
-        }
-    } else {
-        ContentWithLabel(label = label) {
-            UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
-        }
-    }
-
-    FloatingActionButton(
-        onClick = { getDetail() },
-        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.50f),
-        modifier = Modifier
-            .padding(
-                top = 18.dp,
-                start = 8.dp
-            )
-            .size(42.dp)
-    ) {
-        Icon(
-            Icons.Filled.Info,
-            contentDescription = "Show Apod detail"
-        )
-    }
-}
-
-@Composable
-private fun ContentWithLabel(
-    label: String,
-    contentToLabel: @Composable () -> Unit,
-
-    ) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
     ) {
-        contentToLabel()
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        ) {
+            if (apod.isImage()) {
+                BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
+            } else {
+                UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
+
+            }
+        }
+
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
-                .background(
-                    color = MaterialTheme.colors.surface.copy(alpha = 0.50f),
-                    shape = RoundedCornerShape(8.dp),
-                ),
         ) {
             Text(
-                text = label,
+                text = "${apod.title} (${apod.date})",
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(all = 6.dp),
+                    .padding(4.dp)
+                    .background(
+                        color = MaterialTheme.colors.surface.copy(alpha = 0.50f),
+                        shape = RoundedCornerShape(8.dp)
+                    ),
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.h6,
             )
         }
+
+        FloatingActionButton(
+            onClick = { getDetail() },
+            backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.50f),
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(
+                    top = 18.dp,
+                    start = 8.dp
+                )
+                .size(42.dp)
+        ) {
+            Icon(
+                Icons.Filled.Info,
+                contentDescription = "Show Apod detail"
+            )
+        }
+
     }
 }
 
