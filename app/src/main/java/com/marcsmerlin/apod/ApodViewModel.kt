@@ -4,24 +4,28 @@ import androidx.compose.runtime.State
 
 interface ApodViewModel {
     val status: State<Status>
-    val requestResult: State<Result>
+    val result: State<Result>
 
     sealed class Status {
         object Initializing : Status()
-        data class Failed(val error: Exception) : Status()
         object Operational : Status()
     }
 
-    data class Result(
-        val apod: Apod,
-        val isHome: Boolean,
-        val hasNext: Boolean,
-        val hasPrevious: Boolean,
-    )
+    sealed class Result {
+        data class Data(val apod: Apod): Result()
+        data class Error(val error: Exception): Result()
+    }
 
+    fun isHome(): Boolean
     fun goHome()
+
+    fun hasNext(): Boolean
     fun getNext()
+
+    fun hasPrevious(): Boolean
     fun getPrevious()
+
     fun getRandom()
+
     fun onCleared()
 }

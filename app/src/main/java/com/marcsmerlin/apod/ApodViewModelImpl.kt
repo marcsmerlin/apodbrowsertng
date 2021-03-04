@@ -1,5 +1,6 @@
 package com.marcsmerlin.apod
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -10,44 +11,41 @@ class ApodViewModelImpl(
     private val repository: ApodRepository
 ) : ViewModel(), ApodViewModel {
 
-    private val _status = mutableStateOf<ApodViewModel.Status>(ApodViewModel.Status.Initializing)
+    private val _status = mutableStateOf<ApodViewModel.Status>(
+        ApodViewModel.Status.Initializing
+    )
+
     override val status: State<ApodViewModel.Status>
         get() = _status
 
     private lateinit var _result: MutableState<ApodViewModel.Result>
-    override val requestResult: State<ApodViewModel.Result>
+
+    override val result: State<ApodViewModel.Result>
         get() = _result
 
     private fun apodListener(apod: Apod) {
-        _result.value = ApodViewModel.Result(
-            apod = apod,
-            isHome = repository.isHome(),
-            hasNext = repository.hasNextDate(),
-            hasPrevious = repository.hasPreviousDate(),
-        )
+        _result.value = ApodViewModel.Result.Data(apod)
     }
 
     private fun errorListener(error: Exception) {
-        _status.value = ApodViewModel.Status.Failed(error)
+        _result.value = ApodViewModel.Result.Error(error)
     }
 
     init {
         repository.queueHomeRequest(
             { apod: Apod ->
                 _status.value = ApodViewModel.Status.Operational
-                _result = mutableStateOf(
-                    ApodViewModel.Result(
-                        apod = apod,
-                        isHome = repository.isHome(),
-                        hasNext = repository.hasNextDate(),
-                        hasPrevious = repository.hasPreviousDate(),
-                    )
-                )
+                _result = mutableStateOf(ApodViewModel.Result.Data(apod))
             },
 
-            ::errorListener,
+            { error: Exception ->
+                _status.value = ApodViewModel.Status.Operational
+                _result = mutableStateOf(ApodViewModel.Result.Error(error))
+            },
         )
     }
+
+    override fun isHome(): Boolean = repository.isHome()
 
     override fun goHome() {
         repository.queueHomeRequest(
@@ -56,12 +54,16 @@ class ApodViewModelImpl(
         )
     }
 
+    override fun hasNext(): Boolean = repository.hasNextDate()
+
     override fun getNext() {
         repository.queueRequestForNextDate(
             ::apodListener,
             ::errorListener,
         )
     }
+
+    override fun hasPrevious(): Boolean = repository.hasPreviousDate()
 
     override fun getPrevious() {
         repository.queueRequestForPreviousDate(
@@ -71,6 +73,7 @@ class ApodViewModelImpl(
     }
 
     override fun getRandom() {
+        Log.i("ApodViewModel", "getRandom() called.")
         repository.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,

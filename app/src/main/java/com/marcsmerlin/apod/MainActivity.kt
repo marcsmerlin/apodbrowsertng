@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         setContent {
             ApodBrowserTheme {
                 ApodUI(
-                    viewModel = viewModel,
                     bitmapLoader = appContainer.bitmapLoader,
+                    viewModel = viewModel,
                 )
             }
         }

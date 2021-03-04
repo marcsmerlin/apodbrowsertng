@@ -2,7 +2,10 @@ package com.marcsmerlin.apod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -12,11 +15,13 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,86 +30,114 @@ import com.marcsmerlin.apod.utils.IBitmapLoader
 
 @Composable
 fun HomeScreen(
-    appTitle: String,
-    result: ApodViewModel.Result,
     bitmapLoader: IBitmapLoader,
+    viewModel: ApodViewModel,
+    goToDetail: () -> Unit,
+) {
+    when (val result = viewModel.result.value) {
+
+        is ApodViewModel.Result.Data ->
+            DataScreen(
+                bitmapLoader,
+                result.apod,
+                isHome = viewModel::isHome,
+                goHome = viewModel::goHome,
+                getRandom = viewModel::getRandom,
+                goToDetail = goToDetail
+            )
+
+        is ApodViewModel.Result.Error ->
+            ErrorScreen(result.error)
+    }
+}
+
+@Composable
+private fun DataScreen(
+    bitmapLoader: IBitmapLoader,
+    apod: Apod,
+    isHome: () -> Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
-    getDetail: () -> Unit,
+    goToDetail: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
+    val enableHome = !remember(apod) { isHome() }
 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             ScaffoldTopBar(
-                appName = appTitle,
-                result = result,
-                goHome = { goHome() },
-                getRandom = { getRandom() },
+                enableHome = enableHome,
+                goHome = goHome,
+                getRandom = getRandom,
             )
         },
         content = {
             ScaffoldContent(
-                apod = result.apod,
                 bitmapLoader = bitmapLoader,
-                getDetail = { getDetail() },
+                apod = apod,
+                goToDetail = goToDetail,
             )
         },
     )
 }
 
 @Composable
+private fun ErrorScreen(error: Exception) {
+}
+
+@Composable
 private fun ScaffoldTopBar(
-    appName: String,
-    result: ApodViewModel.Result,
+    enableHome: Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = appName) },
+        title = { Text(text = stringResource(id = R.string.app_name)) },
+
         navigationIcon = {
             IconButton(
-                onClick = {},
+                onClick = { },
                 enabled = false
             ) {
-                val contentDescription = "Menu"
                 Icon(
                     Icons.Filled.Menu,
-                    contentDescription = contentDescription
+                    contentDescription = "Menu"
                 )
             }
         },
         actions = {
             IconButton(onClick = { getRandom() }) {
-                val contentDescription = "Get random APOD"
                 Icon(
                     Icons.Filled.Refresh,
-                    contentDescription = contentDescription
+                    contentDescription = "Get random APOD"
                 )
             }
-            IconButton(onClick = { goHome() }, enabled = !result.isHome) {
-                val contentDescription = "Go to APOD home"
-                if (!result.isHome)
+            IconButton(
+                onClick = { goHome() },
+                enabled = enableHome
+            ) {
+                if (enableHome) {
                     Icon(
                         Icons.Filled.Home,
-                        contentDescription = contentDescription
+                        contentDescription = "Go to APOD home",
+                        tint = Color.DarkGray,
                     )
-                else
+                } else {
                     Icon(
                         Icons.Filled.Home,
-                        contentDescription = contentDescription,
-                        tint = Color.DarkGray
+                        contentDescription = "Go to APOD home"
                     )
+                }
             }
         })
 }
 
 @Composable
 private fun ScaffoldContent(
-    apod: Apod,
     bitmapLoader: IBitmapLoader,
-    getDetail: () -> Unit,
+    apod: Apod,
+    goToDetail: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -133,7 +166,7 @@ private fun ScaffoldContent(
         )
 
         FloatingActionButton(
-            onClick = { getDetail() },
+            onClick = { goToDetail() },
             backgroundColor = overlayBackground,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -145,7 +178,7 @@ private fun ScaffoldContent(
         ) {
             Icon(
                 Icons.Filled.Info,
-                contentDescription = "Show Apod detail",
+                contentDescription = "Go to detail",
             )
         }
     }
