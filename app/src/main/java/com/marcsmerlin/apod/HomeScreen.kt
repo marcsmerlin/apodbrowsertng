@@ -1,6 +1,5 @@
 package com.marcsmerlin.apod
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,19 +57,19 @@ private fun DataScreen(
     goToDetail: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
-    val enableHome = !remember(apod) { isHome() }
+    val homeEnabled = !remember(apod) { isHome() }
 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             ScaffoldTopBar(
-                enableHome = enableHome,
+                homeEnabled = homeEnabled,
                 goHome = goHome,
                 getRandom = getRandom,
             )
         },
         content = {
-            ScaffoldContent(
+            ApodContent(
                 bitmapLoader = bitmapLoader,
                 apod = apod,
                 goToDetail = goToDetail,
@@ -81,12 +80,20 @@ private fun DataScreen(
 
 @Composable
 private fun ErrorScreen(error: Exception) {
-    Log.e("Error Screen", error.toString())
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Text(
+            text = "Error detail:\n+ $error",
+            textAlign = TextAlign.Center,
+        )
+    }
 }
+
 
 @Composable
 private fun ScaffoldTopBar(
-    enableHome: Boolean,
+    homeEnabled: Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
@@ -113,9 +120,9 @@ private fun ScaffoldTopBar(
             }
             IconButton(
                 onClick = { goHome() },
-                enabled = enableHome
+                enabled = homeEnabled
             ) {
-                if (enableHome) {
+                if (!homeEnabled) {
                     Icon(
                         Icons.Filled.Home,
                         contentDescription = "Go to APOD home",
@@ -132,7 +139,7 @@ private fun ScaffoldTopBar(
 }
 
 @Composable
-private fun ScaffoldContent(
+private fun ApodContent(
     bitmapLoader: IBitmapLoader,
     apod: Apod,
     goToDetail: () -> Unit,

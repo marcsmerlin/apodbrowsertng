@@ -1,9 +1,6 @@
 package com.marcsmerlin.apod
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -11,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -19,31 +17,45 @@ fun DetailScreen(
     viewModel: ApodViewModel,
     goBack: () -> Unit,
 ) {
+    val appName = stringResource(id = R.string.app_name)
+
     val scaffoldState = rememberScaffoldState()
 
-    when (val result = viewModel.result.value) {
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            ScaffoldTopBar(
+                appName = appName,
+                goBack = { goBack() })
+        },
+        content = {
 
-        is ApodViewModel.Result.Data ->
+            when (val result = viewModel.result.value) {
 
-            Scaffold(
-                scaffoldState = scaffoldState,
-                topBar = {
-                    ScaffoldTopBar(
-                        goBack = { goBack() })
-                },
-                content = {
-                    ScaffoldContent(result.apod)
-                }
-            )
+                is ApodViewModel.Result.Data ->
+                    ApodContent(result.apod)
 
-        is ApodViewModel.Result.Error -> {
+                is ApodViewModel.Result.Error ->
+                    ErrorDetail(result.error)
 
-        }
+            }
+        })
+}
+
+@Composable
+private fun ErrorDetail(error: Exception) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Text(
+            text = "Error detail:\n+ $error",
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
 @Composable
-private fun ScaffoldContent(
+private fun ApodContent(
     apod: Apod,
 ) {
     with(apod) {
@@ -77,10 +89,11 @@ private fun ScaffoldContent(
 
 @Composable
 private fun ScaffoldTopBar(
+    appName: String,
     goBack: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = stringResource(id = R.string.app_name)) },
+        title = { Text(text = appName) },
 
         navigationIcon = {
             IconButton(
