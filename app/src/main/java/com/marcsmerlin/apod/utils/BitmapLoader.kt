@@ -12,7 +12,7 @@ class BitmapLoader(
 
         val tag = this::class.java
 
-        Log.i("$tag", "Queuing request for: $url")
+        Log.i("$tag", "Bitmap request queued for: $url")
 
         val result = mutableStateOf<BitmapStatus>(BitmapStatus.Loading)
 
@@ -20,9 +20,12 @@ class BitmapLoader(
             url = url,
             { bitmap ->
                 result.value = BitmapStatus.Success(bitmap)
+
                 Log.i("$tag", "Bitmap received for: $url")
             },
-            { exception -> result.value = BitmapStatus.Error(exception) },
+            { exception ->
+                result.value = BitmapStatus.Error(exception)
+            },
         )
 
         return result

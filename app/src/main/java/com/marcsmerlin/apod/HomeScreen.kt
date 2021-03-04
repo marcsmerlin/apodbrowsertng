@@ -1,6 +1,6 @@
 package com.marcsmerlin.apod
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,18 +14,15 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.marcsmerlin.apod.utils.BitmapStatus
+import com.marcsmerlin.apod.utils.BitmapImageForUrl
 import com.marcsmerlin.apod.utils.IBitmapLoader
 
 @Composable
@@ -84,6 +81,7 @@ private fun DataScreen(
 
 @Composable
 private fun ErrorScreen(error: Exception) {
+    Log.e("Error Screen", error.toString())
 }
 
 @Composable
@@ -144,7 +142,10 @@ private fun ScaffoldContent(
     ) {
 
         if (apod.isImage()) {
-            BitmapDownloadTracker(bitmapStatus = bitmapLoader.queueRequest(apod.url))
+            BitmapImageForUrl(
+                url = apod.url,
+                bitmapLoader = bitmapLoader,
+            )
         } else {
             UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
         }
@@ -180,38 +181,6 @@ private fun ScaffoldContent(
                 Icons.Filled.Info,
                 contentDescription = "Go to detail",
             )
-        }
-    }
-}
-
-@Composable
-private fun BitmapDownloadTracker(
-    bitmapStatus: State<BitmapStatus>,
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when (val value = bitmapStatus.value) {
-            BitmapStatus.Loading ->
-                Text(
-                    text = "Loading image\u2026",
-                    textAlign = TextAlign.Center,
-                )
-
-            is BitmapStatus.Error ->
-                Text(
-                    text = "Error downloading image:\n${value.error}",
-                    textAlign = TextAlign.Center,
-                )
-
-            is BitmapStatus.Success ->
-                Image(
-                    bitmap = value.bitmap.asImageBitmap(),
-                    contentDescription = "Download image",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
         }
     }
 }
