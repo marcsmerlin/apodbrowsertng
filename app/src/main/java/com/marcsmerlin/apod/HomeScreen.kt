@@ -13,16 +13,16 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.marcsmerlin.apod.utils.BitmapImageForUrl
 import com.marcsmerlin.apod.utils.IBitmapLoader
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -30,20 +30,25 @@ fun HomeScreen(
     viewModel: ApodViewModel,
     goToDetail: () -> Unit,
 ) {
+    val title = stringResource(id = R.string.app_name)
+
     when (val result = viewModel.result.value) {
 
         is ApodViewModel.Result.Data ->
             DataScreen(
                 bitmapLoader,
                 result.apod,
-                isHome = viewModel::isHome,
+                title = title,
                 goHome = viewModel::goHome,
                 getRandom = viewModel::getRandom,
                 goToDetail = goToDetail
             )
 
         is ApodViewModel.Result.Error ->
-            ErrorScreen(result.error)
+            ErrorScreen(
+                title,
+                result.error
+            )
     }
 }
 
@@ -51,22 +56,51 @@ fun HomeScreen(
 private fun DataScreen(
     bitmapLoader: IBitmapLoader,
     apod: Apod,
-    isHome: () -> Boolean,
+    title: String,
     goHome: () -> Unit,
     getRandom: () -> Unit,
     goToDetail: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
-    val homeEnabled = !remember(apod) { isHome() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         scaffoldState = scaffoldState,
+        drawerContent = {
+
+        },
         topBar = {
-            ScaffoldTopBar(
-                homeEnabled = homeEnabled,
-                goHome = goHome,
-                getRandom = getRandom,
-            )
+            TopAppBar(
+                title = { Text(text = title) },
+
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch { scaffoldState.drawerState.open() }
+                        })
+                    {
+                        Icon(
+                            Icons.Filled.Menu,
+                            contentDescription = "Menu"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = getRandom) {
+                        Icon(
+                            Icons.Filled.Refresh,
+                            contentDescription = "Get random APOD"
+                        )
+                    }
+
+                    IconButton(onClick = goHome) {
+                        Icon(
+                            Icons.Filled.Home,
+                            contentDescription = "Go to APOD home"
+                        )
+
+                    }
+                })
         },
         content = {
             ApodContent(
@@ -79,63 +113,18 @@ private fun DataScreen(
 }
 
 @Composable
-private fun ErrorScreen(error: Exception) {
+private fun ErrorScreen(
+    title: String,
+    error: Exception
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         Text(
-            text = "Error detail:\n+ $error",
+            text = "$title error detail:\n+ $error",
             textAlign = TextAlign.Center,
         )
     }
-}
-
-
-@Composable
-private fun ScaffoldTopBar(
-    homeEnabled: Boolean,
-    goHome: () -> Unit,
-    getRandom: () -> Unit,
-) {
-    TopAppBar(
-        title = { Text(text = stringResource(id = R.string.app_name)) },
-
-        navigationIcon = {
-            IconButton(
-                onClick = { },
-                enabled = false
-            ) {
-                Icon(
-                    Icons.Filled.Menu,
-                    contentDescription = "Menu"
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = { getRandom() }) {
-                Icon(
-                    Icons.Filled.Refresh,
-                    contentDescription = "Get random APOD"
-                )
-            }
-            IconButton(
-                onClick = { goHome() },
-                enabled = homeEnabled
-            ) {
-                if (!homeEnabled) {
-                    Icon(
-                        Icons.Filled.Home,
-                        contentDescription = "Go to APOD home",
-                        tint = Color.DarkGray,
-                    )
-                } else {
-                    Icon(
-                        Icons.Filled.Home,
-                        contentDescription = "Go to APOD home"
-                    )
-                }
-            }
-        })
 }
 
 @Composable
