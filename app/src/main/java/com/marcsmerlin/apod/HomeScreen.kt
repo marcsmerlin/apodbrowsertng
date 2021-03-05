@@ -59,19 +59,36 @@ private fun HomeScaffold(
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
-            Spacer(Modifier.height(24.dp))
-            TextButton(
-                onClick = {
-                    navHostController.navigate("about")
-                    coroutineScope.launch {
-                        scaffoldState.drawerState.close()
-                    }
-                },
+            Column(
+                Modifier.padding(start = 24.dp)
             ) {
-                Text(
-                    text = "About",
-                    style = MaterialTheme.typography.h5,
-                )
+                Spacer(modifier = Modifier.padding(top = 24.dp))
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            scaffoldState.drawerState.close()
+                            navHostController.navigate("about")
+                        }
+                    },
+                ) {
+                    Text(
+                        text = "About",
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+                Spacer(modifier = Modifier.padding(top = 18.dp))
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            scaffoldState.drawerState.close()
+                        }
+                    },
+                ) {
+                    Text(
+                        text = "Credits",
+                        style = MaterialTheme.typography.h6
+                    )
+                }
             }
         },
         topBar = {
