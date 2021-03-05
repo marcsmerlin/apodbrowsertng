@@ -55,13 +55,18 @@ private fun OperationalScreen(
             HomeScreen(
                 bitmapLoader = bitmapLoader,
                 viewModel = viewModel,
-                goToDetail = { navHostController.navigate(route = "detail") }
+                navHostController = navHostController,
             )
         }
         composable(route = "detail") {
             DetailScreen(
                 viewModel = viewModel,
-                goBack = { navHostController.popBackStack() }
+                goBack = { navHostController.popBackStack() },
+            )
+        }
+        composable(route = "about") {
+            AboutScreen(
+                goBack = { navHostController.popBackStack() },
             )
         }
     }

@@ -1,10 +1,7 @@
 package com.marcsmerlin.apod
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.navigate
 import com.marcsmerlin.apod.utils.BitmapImageForUrl
 import com.marcsmerlin.apod.utils.IBitmapLoader
 import kotlinx.coroutines.launch
@@ -29,18 +28,18 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     bitmapLoader: IBitmapLoader,
     viewModel: ApodViewModel,
-    goToDetail: () -> Unit,
+    navHostController: NavHostController,
 ) {
     val title = stringResource(id = R.string.app_name)
 
     HomeScaffold(
         bitmapLoader = bitmapLoader,
         result = viewModel.result.value,
+        navHostController = navHostController,
         title = title,
         isHome = viewModel::isHome,
         goHome = viewModel::goHome,
         getRandom = viewModel::getRandom,
-        goToDetail = goToDetail,
     )
 }
 
@@ -48,11 +47,11 @@ fun HomeScreen(
 private fun HomeScaffold(
     bitmapLoader: IBitmapLoader,
     result: ApodViewModel.Result,
+    navHostController: NavHostController,
     title: String,
     isHome: () -> Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
-    goToDetail: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
@@ -60,7 +59,20 @@ private fun HomeScaffold(
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
-
+            Spacer(Modifier.height(24.dp))
+            TextButton(
+                onClick = {
+                    navHostController.navigate("about")
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                },
+            ) {
+                Text(
+                    text = "About",
+                    style = MaterialTheme.typography.h5,
+                )
+            }
         },
         topBar = {
             TopAppBar(
@@ -117,7 +129,7 @@ private fun HomeScaffold(
                     ApodContent(
                         bitmapLoader = bitmapLoader,
                         apod = result.apod,
-                        goToDetail = goToDetail,
+                        goToDetail = { navHostController.navigate(route = "detail") }
                     )
 
                 is ApodViewModel.Result.Error ->
