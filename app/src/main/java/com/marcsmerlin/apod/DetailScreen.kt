@@ -18,22 +18,27 @@ fun DetailScreen(
     goBack: () -> Unit,
 ) {
     val appName = stringResource(id = R.string.app_name)
-
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            ScaffoldTopBar(
-                appName = appName,
-                goBack = { goBack() })
+            TopAppBar(
+                title = { Text(text = appName) },
+                navigationIcon = {
+                    IconButton(onClick = { goBack() }) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = "Go back"
+                        )
+                    }
+                })
         },
         content = {
-
             when (val result = viewModel.result.value) {
 
                 is ApodViewModel.Result.Data ->
-                    ApodContent(result.apod)
+                    ApodDetail(result.apod)
 
                 is ApodViewModel.Result.Error ->
                     ErrorDetail(result.error)
@@ -42,20 +47,9 @@ fun DetailScreen(
         })
 }
 
-@Composable
-private fun ErrorDetail(error: Exception) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        Text(
-            text = "Error detail:\n+ $error",
-            textAlign = TextAlign.Center,
-        )
-    }
-}
 
 @Composable
-private fun ApodContent(
+private fun ApodDetail(
     apod: Apod,
 ) {
     with(apod) {
@@ -88,22 +82,13 @@ private fun ApodContent(
 }
 
 @Composable
-private fun ScaffoldTopBar(
-    appName: String,
-    goBack: () -> Unit,
-) {
-    TopAppBar(
-        title = { Text(text = appName) },
-
-        navigationIcon = {
-            IconButton(
-                onClick = { goBack() },
-                enabled = true
-            ) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = "Go back"
-                )
-            }
-        })
+private fun ErrorDetail(error: Exception) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Text(
+            text = "Error detail:\n+ $error",
+            textAlign = TextAlign.Center,
+        )
+    }
 }

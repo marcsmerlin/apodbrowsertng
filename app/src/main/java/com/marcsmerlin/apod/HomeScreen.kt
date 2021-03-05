@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,31 +33,23 @@ fun HomeScreen(
 ) {
     val title = stringResource(id = R.string.app_name)
 
-    when (val result = viewModel.result.value) {
-
-        is ApodViewModel.Result.Data ->
-            DataScreen(
-                bitmapLoader,
-                result.apod,
-                title = title,
-                goHome = viewModel::goHome,
-                getRandom = viewModel::getRandom,
-                goToDetail = goToDetail
-            )
-
-        is ApodViewModel.Result.Error ->
-            ErrorScreen(
-                title,
-                result.error
-            )
-    }
+    HomeScaffold(
+        bitmapLoader = bitmapLoader,
+        result = viewModel.result.value,
+        title = title,
+        isHome = viewModel::isHome,
+        goHome = viewModel::goHome,
+        getRandom = viewModel::getRandom,
+        goToDetail = goToDetail,
+    )
 }
 
 @Composable
-private fun DataScreen(
+private fun HomeScaffold(
     bitmapLoader: IBitmapLoader,
-    apod: Apod,
+    result: ApodViewModel.Result,
     title: String,
+    isHome: () -> Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
     goToDetail: () -> Unit,
@@ -76,7 +69,9 @@ private fun DataScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            coroutineScope.launch { scaffoldState.drawerState.open() }
+                            coroutineScope.launch {
+                                scaffoldState.drawerState.open()
+                            }
                         })
                     {
                         Icon(
@@ -93,35 +88,56 @@ private fun DataScreen(
                         )
                     }
 
-                    IconButton(onClick = goHome) {
-                        Icon(
-                            Icons.Filled.Home,
-                            contentDescription = "Go to APOD home"
-                        )
+                    IconButton(
+                        onClick = goHome,
+                        enabled = !isHome()
+                    ) {
+                        val contentDescription = "Go to APOD home"
+
+                        if (!isHome()) {
+                            Icon(
+                                Icons.Filled.Home,
+                                contentDescription,
+                            )
+                        } else {
+                            Icon(
+                                Icons.Filled.Home,
+                                contentDescription,
+                                tint = Color.DarkGray,
+                            )
+                        }
 
                     }
                 })
         },
         content = {
-            ApodContent(
-                bitmapLoader = bitmapLoader,
-                apod = apod,
-                goToDetail = goToDetail,
-            )
+            when (result) {
+
+                is ApodViewModel.Result.Data ->
+                    ApodContent(
+                        bitmapLoader = bitmapLoader,
+                        apod = result.apod,
+                        goToDetail = goToDetail,
+                    )
+
+                is ApodViewModel.Result.Error ->
+                    ErrorContent(
+                        result.error
+                    )
+            }
         },
     )
 }
 
 @Composable
-private fun ErrorScreen(
-    title: String,
+private fun ErrorContent(
     error: Exception
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         Text(
-            text = "$title error detail:\n+ $error",
+            text = "An error has occurred accessing the Apod archive:\n+ $error",
             textAlign = TextAlign.Center,
         )
     }
@@ -175,7 +191,7 @@ private fun ApodContent(
         ) {
             Icon(
                 Icons.Filled.Info,
-                contentDescription = "Go to detail",
+                contentDescription = "Go to detail screen",
             )
         }
     }
@@ -190,7 +206,7 @@ private fun UnsupportedMediaTypeNotice(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "The media type \"$mediaType\" is not supported.",
+            text = "Sorry, media type \"$mediaType\" is not yet supported.",
             textAlign = TextAlign.Center,
         )
     }
