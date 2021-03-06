@@ -28,7 +28,7 @@ fun DetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { goBack() }) {
                         Icon(
-                            Icons.Filled.ArrowBack,
+                            imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Go back"
                         )
                     }

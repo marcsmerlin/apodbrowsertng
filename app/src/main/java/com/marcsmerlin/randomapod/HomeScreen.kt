@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
+import com.marcsmerlin.randomapod.utils.BitmapImageForUrl
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.launch
 
@@ -31,7 +32,7 @@ fun HomeScreen(
 ) {
     val title = stringResource(id = R.string.app_name)
 
-    HomeScaffold(
+    HomeScreenScaffold(
         bitmapLoader = bitmapLoader,
         result = viewModel.result.value,
         navHostController = navHostController,
@@ -43,7 +44,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeScaffold(
+private fun HomeScreenScaffold(
     bitmapLoader: IBitmapLoader,
     result: ApodViewModel.Result,
     navHostController: NavHostController,
@@ -110,7 +111,7 @@ private fun HomeScaffold(
                         })
                     {
                         Icon(
-                            Icons.Filled.Menu,
+                            imageVector = Icons.Filled.Menu,
                             contentDescription = "Menu"
                         )
                     }
@@ -118,7 +119,7 @@ private fun HomeScaffold(
                 actions = {
                     IconButton(onClick = getRandom) {
                         Icon(
-                            Icons.Filled.Refresh,
+                            imageVector = Icons.Filled.Refresh,
                             contentDescription = "Fetch random APOD"
                         )
                     }
@@ -131,13 +132,13 @@ private fun HomeScaffold(
 
                         if (!isHome()) {
                             Icon(
-                                Icons.Filled.Home,
-                                contentDescription,
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = contentDescription,
                             )
                         } else {
                             Icon(
-                                Icons.Filled.Home,
-                                contentDescription,
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = contentDescription,
                                 tint = Color.DarkGray,
                             )
                         }
@@ -152,12 +153,12 @@ private fun HomeScaffold(
                     ApodContent(
                         bitmapLoader = bitmapLoader,
                         apod = result.apod,
-                        goToDetail = { navHostController.navigate(route = "detail") }
+                        goToDetail = { navHostController.navigate(route = "detail") },
                     )
 
                 is ApodViewModel.Result.Error ->
                     ErrorContent(
-                        result.error
+                        error = result.error
                     )
             }
         },
@@ -222,10 +223,10 @@ private fun ApodContent(
                     top = 18.dp,
                     start = 8.dp
                 )
-                .size(42.dp)
+                .size(42.dp),
         ) {
             Icon(
-                Icons.Filled.Info,
+                imageVector = Icons.Filled.Info,
                 contentDescription = "Go to detail screen",
             )
         }
