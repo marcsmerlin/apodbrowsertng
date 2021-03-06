@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

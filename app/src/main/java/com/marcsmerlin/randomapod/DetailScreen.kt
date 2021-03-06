@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -28,7 +28,7 @@ fun DetailScreen(
                 navigationIcon = {
                     IconButton(onClick = { goBack() }) {
                         Icon(
-                            Icons.Filled.ArrowBack,
+                            imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Go back"
                         )
                     }

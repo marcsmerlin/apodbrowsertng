@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod.ui.theme
+package com.marcsmerlin.randomapod.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

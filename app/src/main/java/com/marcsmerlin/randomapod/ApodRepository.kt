@@ -1,6 +1,6 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
-import com.marcsmerlin.apod.utils.IStringQueue
+import com.marcsmerlin.randomapod.utils.IStringQueue
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
