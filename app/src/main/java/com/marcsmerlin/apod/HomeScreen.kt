@@ -63,8 +63,8 @@ private fun HomeScaffold(
                 Modifier.padding(start = 24.dp)
             ) {
                 Text(
-                    text = "Logo (todo)",
-                    color = Color.Gray,
+                    text = "Logo",
+                    color = Color.LightGray,
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
                 )
