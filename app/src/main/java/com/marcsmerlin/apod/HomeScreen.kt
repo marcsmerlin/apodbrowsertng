@@ -81,6 +81,7 @@ private fun HomeScaffold(
                     onClick = {
                         coroutineScope.launch {
                             scaffoldState.drawerState.close()
+                            navHostController.navigate("credits")
                         }
                     },
                 ) {

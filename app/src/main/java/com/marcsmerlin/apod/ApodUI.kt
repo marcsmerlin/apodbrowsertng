@@ -69,5 +69,10 @@ private fun OperationalScreen(
                 goBack = { navHostController.popBackStack() },
             )
         }
+        composable(route = "credits") {
+            CreditsScreen(
+                goBack = { navHostController.popBackStack() },
+            )
+        }
     }
 }
