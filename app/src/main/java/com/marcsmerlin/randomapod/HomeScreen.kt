@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
-import com.marcsmerlin.apod.utils.BitmapImageForUrl
-import com.marcsmerlin.apod.utils.IBitmapLoader
+import com.marcsmerlin.randomapod.utils.BitmapImageForUrl
+import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.launch
 
 @Composable

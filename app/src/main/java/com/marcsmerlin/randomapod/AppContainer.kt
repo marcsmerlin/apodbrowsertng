@@ -1,10 +1,10 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import android.content.Context
-import com.marcsmerlin.apod.utils.BitmapLoader
-import com.marcsmerlin.apod.utils.IBitmapLoader
-import com.marcsmerlin.apod.utils.VolleyBitmapQueue
-import com.marcsmerlin.apod.utils.VolleyStringQueue
+import com.marcsmerlin.randomapod.utils.BitmapLoader
+import com.marcsmerlin.randomapod.utils.IBitmapLoader
+import com.marcsmerlin.randomapod.utils.VolleyBitmapQueue
+import com.marcsmerlin.randomapod.utils.VolleyStringQueue
 
 interface AppContainer {
     val viewModelFactory: ApodViewModelFactory

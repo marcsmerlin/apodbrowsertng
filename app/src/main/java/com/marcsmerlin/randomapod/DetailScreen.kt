@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*

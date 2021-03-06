@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,19 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-private val AboutText =
+private val CreditsText =
     """
-Except for brief interruptions due to federal government shutdowns, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995.
+The Random Apod app was created by Marc Merlin as an exercise to learn the Kotlin programming language and the Android Development environment, in particular the newly introduced Jetpack Compose user interface framework. It is offered for use free of charge as a tribute to NASA's Astronomy Picture of the Day (Apod) website.
 
-This Random Apod Android app uses a REST-accessible archive of these pictures provided courtesy of NASA. (Thank you, NASA!) Any deficiencies in their presentation here are solely the fault of the app's creator.
-
-You can visit NASA's Astronomy Picture of the Day website to get a daily dose of fascinating astronomy imagery.
+The source code for the app, intended to be suitable for educational purposes, is available under a GNU General Public License v3.0 at Marc's GitHub repository:
     """.trimIndent()
 
-private const val NasaApodWebsiteURL = "https://apod.nasa.gov/apod/astropix.html"
+private val GitHubRepositoryURL = "https://github.com/marcsmerlin"
 
 @Composable
-fun AboutScreen(
+fun CreditsScreen(
     goBack: () -> Unit,
 ) {
     val appName = stringResource(id = R.string.app_name)
@@ -51,17 +49,17 @@ fun AboutScreen(
                     .padding(24.dp),
             ) {
                 Text(
-                    text = "About NASA's APOD",
+                    text = "Credits for Random Apod app",
                     style = MaterialTheme.typography.h6,
 
                     )
                 Spacer(modifier = Modifier.padding(top = 18.dp))
                 Text(
-                    text = AboutText,
+                    text = CreditsText,
                     style = MaterialTheme.typography.body1,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(text = NasaApodWebsiteURL)
+                Text(text = GitHubRepositoryURL)
             }
         }
     )

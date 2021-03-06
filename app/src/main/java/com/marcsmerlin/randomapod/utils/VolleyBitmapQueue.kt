@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod.utils
+package com.marcsmerlin.randomapod.utils
 
 import android.content.Context
 import android.graphics.Bitmap

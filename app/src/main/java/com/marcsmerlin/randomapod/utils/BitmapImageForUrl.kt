@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod.utils
+package com.marcsmerlin.randomapod.utils
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

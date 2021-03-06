@@ -1,4 +1,4 @@
-package com.marcsmerlin.apod
+package com.marcsmerlin.randomapod
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
