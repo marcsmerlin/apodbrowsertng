@@ -2,6 +2,9 @@ package com.marcsmerlin.randomapod
 
 import androidx.compose.runtime.State
 
+/*
+ApodViewModel: interface for viewModels that conform to ApodUI requirements.
+ */
 interface ApodViewModel {
     val status: State<Status>
     val result: State<Result>

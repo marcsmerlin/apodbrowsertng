@@ -7,6 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
+/*
+ApodViewModel: Realization of the ApodViewModel interface which uses an ApodRepository.
+ */
 class ApodViewModelImpl(
     private val repository: ApodRepository
 ) : ViewModel(), ApodViewModel {

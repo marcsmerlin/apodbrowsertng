@@ -5,6 +5,10 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
 
+/*
+ApodRepository: class used to provide access to the NASA Apod archive at a predefined endpoint
+with an assigned api_key. Requires the REST service of an IStringRequest queue.
+ */
 class ApodRepository(
     endpoint: String,
     apiKey: String,

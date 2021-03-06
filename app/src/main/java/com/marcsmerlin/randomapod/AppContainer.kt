@@ -11,6 +11,10 @@ interface AppContainer {
     val bitmapLoader: IBitmapLoader
 }
 
+/*
+AppContainerImpl: realization of the AppContainer interface supplying a concrete
+ApodViewModelFactory and a BitmapLoader.
+ */
 class AppContainerImpl(
     private val applicationContext: Context
 ) : AppContainer {

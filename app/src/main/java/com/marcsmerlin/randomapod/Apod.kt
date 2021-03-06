@@ -3,6 +3,9 @@ package com.marcsmerlin.randomapod
 import org.json.JSONObject
 import java.time.LocalDate
 
+/*
+Apod: data class which encapsulates the response to a single NASA Apod API request.
+ */
 data class Apod(
     val date: String,
     val title: String,

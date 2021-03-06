@@ -6,6 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.marcsmerlin.randomapod.ui.theme.ApodBrowserTheme
 
+/*
+MainActivity: Android activity that provisions a factory-supplied viewModel and couples it and a
+bitmapLoader to the top-level ApodUI Composable.
+ */
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ApodViewModel
 

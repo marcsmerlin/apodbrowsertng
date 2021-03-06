@@ -24,6 +24,9 @@ import com.marcsmerlin.randomapod.utils.BitmapImageForUrl
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.launch
 
+/*
+HomeScreen: Composable that serves as the home screen for the Random Apod app.
+ */
 @Composable
 fun HomeScreen(
     bitmapLoader: IBitmapLoader,
