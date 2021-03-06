@@ -62,7 +62,13 @@ private fun HomeScaffold(
             Column(
                 Modifier.padding(start = 24.dp)
             ) {
-                Spacer(modifier = Modifier.padding(top = 24.dp))
+                Text(
+                    text = "Logo (todo)",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
+                )
+                Divider()
                 TextButton(
                     onClick = {
                         coroutineScope.launch {
@@ -73,7 +79,7 @@ private fun HomeScaffold(
                 ) {
                     Text(
                         text = "About",
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6,
                     )
                 }
                 Spacer(modifier = Modifier.padding(top = 18.dp))
@@ -87,7 +93,7 @@ private fun HomeScaffold(
                 ) {
                     Text(
                         text = "Credits",
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6,
                     )
                 }
             }
@@ -114,7 +120,7 @@ private fun HomeScaffold(
                     IconButton(onClick = getRandom) {
                         Icon(
                             Icons.Filled.Refresh,
-                            contentDescription = "Get random APOD"
+                            contentDescription = "Fetch random APOD"
                         )
                     }
 
@@ -122,7 +128,7 @@ private fun HomeScaffold(
                         onClick = goHome,
                         enabled = !isHome()
                     ) {
-                        val contentDescription = "Go to APOD home"
+                        val contentDescription = "Go to most recent APOD"
 
                         if (!isHome()) {
                             Icon(
@@ -192,7 +198,7 @@ private fun ApodContent(
             UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
         }
 
-        val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.66f)
+        val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.50f)
 
         Text(
             text = "${apod.title} (${apod.date})",
@@ -236,7 +242,10 @@ private fun UnsupportedMediaTypeNotice(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Sorry, media type \"$mediaType\" is not yet supported.",
+            text = """
+                Sorry, the media type "$mediaType" is not yet supported.
+                Click on the info button above for Apod details.
+            """.trimIndent(),
             textAlign = TextAlign.Center,
         )
     }

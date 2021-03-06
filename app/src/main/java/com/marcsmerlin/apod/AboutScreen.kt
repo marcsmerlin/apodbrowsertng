@@ -14,12 +14,14 @@ import androidx.compose.ui.unit.dp
 
 private val AboutText =
     """
-Except for minor interruptions due to federal government shutdown, under award No. 80NSSC17M0076, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995. With much gratitude, this Random Apod Android app accesses an archive of these pictures provided courtesy of NASA. Any deficiencies in their presentation or representation here are solely the fault of the app's creator.
+Except for brief interruptions due to federal government shutdowns, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995.
 
-Visit NASA's Astronomy Picture of the Day website to get your daily dose of beautiful astronomy imagery:
+This Random Apod Android app uses a REST-accessible archive of these pictures provided courtesy of NASA. (Thank you, NASA!) Any deficiencies in their presentation here are solely the fault of the app's creator.
+
+You can visit NASA's Astronomy Picture of the Day website to get a daily dose of fascinating astronomy imagery.
     """.trimIndent()
 
-private const val NasaApodLink = "https://apod.nasa.gov/apod/astropix.html"
+private const val NasaApodWebsiteURL = "https://apod.nasa.gov/apod/astropix.html"
 
 @Composable
 fun AboutScreen(
@@ -59,7 +61,7 @@ fun AboutScreen(
                     style = MaterialTheme.typography.body1,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(text = NasaApodLink)
+                Text(text = NasaApodWebsiteURL)
             }
         }
     )
