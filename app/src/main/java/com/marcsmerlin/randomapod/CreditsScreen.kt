@@ -27,9 +27,9 @@ private val GitHubRepositoryURL = "https://github.com/marcsmerlin"
 
 @Composable
 fun CreditsScreen(
+    appName: String,
     goBack: () -> Unit,
 ) {
-    val appName = stringResource(id = R.string.app_name)
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(

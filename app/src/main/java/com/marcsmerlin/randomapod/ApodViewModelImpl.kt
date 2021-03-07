@@ -1,6 +1,5 @@
 package com.marcsmerlin.randomapod
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 /*
-ApodViewModel: Realization of the ApodViewModel interface which uses an ApodRepository.
+ApodViewModel: Realization of the ApodViewModel interface which depends on an ApodRepository.
  */
 class ApodViewModelImpl(
     private val repository: ApodRepository
@@ -57,6 +56,13 @@ class ApodViewModelImpl(
         )
     }
 
+    override fun getRandom() {
+        repository.queueRequestForRandomDate(
+            ::apodListener,
+            ::errorListener,
+        )
+    }
+
     override fun hasNext(): Boolean = repository.hasNextDate()
 
     override fun getNext() {
@@ -75,13 +81,6 @@ class ApodViewModelImpl(
         )
     }
 
-    override fun getRandom() {
-        Log.i("ApodViewModel", "getRandom() called.")
-        repository.queueRequestForRandomDate(
-            ::apodListener,
-            ::errorListener,
-        )
-    }
 
     override fun onCleared() {
         super.onCleared()

@@ -30,9 +30,9 @@ private const val NasaApodWebsiteURL = "https://apod.nasa.gov/apod/astropix.html
 
 @Composable
 fun AboutScreen(
+    appName: String,
     goBack: () -> Unit,
 ) {
-    val appName = stringResource(id = R.string.app_name)
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(

@@ -6,7 +6,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -18,10 +17,10 @@ request.
  */
 @Composable
 fun DetailScreen(
+    appName: String,
     viewModel: ApodViewModel,
     goBack: () -> Unit,
 ) {
-    val appName = stringResource(id = R.string.app_name)
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(

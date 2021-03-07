@@ -14,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,17 +28,16 @@ HomeScreen: Composable that functions as the home screen for the Random Apod app
  */
 @Composable
 fun HomeScreen(
+    appName: String,
     bitmapLoader: IBitmapLoader,
     viewModel: ApodViewModel,
     navHostController: NavHostController,
 ) {
-    val title = stringResource(id = R.string.app_name)
-
     HomeScreenScaffold(
+        appName = appName,
         bitmapLoader = bitmapLoader,
         result = viewModel.result.value,
         navHostController = navHostController,
-        title = title,
         isHome = viewModel::isHome,
         goHome = viewModel::goHome,
         getRandom = viewModel::getRandom,
@@ -48,10 +46,10 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenScaffold(
+    appName: String,
     bitmapLoader: IBitmapLoader,
     result: ApodViewModel.Result,
     navHostController: NavHostController,
-    title: String,
     isHome: () -> Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
@@ -103,7 +101,7 @@ private fun HomeScreenScaffold(
         },
         topBar = {
             TopAppBar(
-                title = { Text(text = title) },
+                title = { Text(text = appName) },
 
                 navigationIcon = {
                     IconButton(
