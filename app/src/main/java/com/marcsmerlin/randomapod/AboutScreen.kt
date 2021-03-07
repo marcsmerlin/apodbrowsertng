@@ -12,27 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-private val AboutText =
-    """
-Except for brief interruptions due to federal government shutdowns, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995.
-
-This Random Apod Android app uses a REST-accessible archive of these pictures provided courtesy of NASA. (Thank you, NASA!) Any deficiencies in their presentation here are solely the fault of the app's creator.
-
-You can visit NASA's Astronomy Picture of the Day website to get a daily dose of fascinating astronomy imagery.
-    """.trimIndent()
-
-private const val NasaApodWebsiteURL = "https://apod.nasa.gov/apod/astropix.html"
-
-
 @Composable
 fun AboutScreen(
     appName: String,
     goBack: () -> Unit,
 ) {
-    val scaffoldState = rememberScaffoldState()
+    val aboutTitle = stringResource(R.string.about_title)
+    val aboutText = stringResource(R.string.about_text)
+    val nasaApodWebsiteURL = "https://apod.nasa.gov/apod/astropix.html"
 
     Scaffold(
-        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = { Text(text = appName) },
@@ -52,17 +41,17 @@ fun AboutScreen(
                     .padding(24.dp),
             ) {
                 Text(
-                    text = "About NASA's APOD",
+                    text = aboutTitle,
                     style = MaterialTheme.typography.h6,
 
                     )
                 Spacer(modifier = Modifier.padding(top = 18.dp))
                 Text(
-                    text = AboutText,
+                    text = aboutText,
                     style = MaterialTheme.typography.body1,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(text = NasaApodWebsiteURL)
+                Text(text = nasaApodWebsiteURL)
             }
         }
     )
