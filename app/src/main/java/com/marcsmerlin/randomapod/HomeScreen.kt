@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
-import com.marcsmerlin.randomapod.utils.BitmapImageForUrl
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

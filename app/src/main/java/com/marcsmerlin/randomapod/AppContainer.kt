@@ -19,11 +19,12 @@ class AppContainerImpl(
 
     init {
         val apodRepository: ApodRepository by lazy {
+            val context = applicationContext
             ApodRepository(
-                queue = VolleyStringQueue(context = applicationContext),
-                endpoint = "https://api.nasa.gov/planetary/apod",
-                apiKey = "Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE",
-                firstDate = "1995-06-16",
+                queue = VolleyStringQueue(context),
+                endpoint = context.getString(R.string.apod_api_endpoint),
+                apiKey = context.getString(R.string.apod_api_key),
+                firstDate = context.getString(R.string.apod_api_first_date),
             )
         }
 

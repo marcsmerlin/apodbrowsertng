@@ -64,7 +64,7 @@ private fun OperationalScreen(
                 IconButton(onClick = { navHostController.popBackStack() }) {
                     Icon(
                         Icons.Filled.ArrowBack,
-                        contentDescription = "Go back",
+                        contentDescription = "Return to previous screen",
                     )
                 }
             })

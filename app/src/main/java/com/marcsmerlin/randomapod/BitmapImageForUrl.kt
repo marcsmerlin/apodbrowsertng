@@ -1,10 +1,9 @@
-package com.marcsmerlin.randomapod.utils
+package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +33,13 @@ fun BitmapImageForUrl(
         when (val value = bitmapStatus.value) {
             BitmapStatus.Loading ->
                 Text(
-                    text = "Loading image\u2026",
+                    text = "Downloading image\u2026",
                     textAlign = TextAlign.Center,
                 )
 
             is BitmapStatus.Error ->
                 Text(
-                    text = "Error downloading image:\n${value.error}",
+                    text = "Error downloading image from:\n$url\n${value.error}",
                     textAlign = TextAlign.Center,
                 )
 
