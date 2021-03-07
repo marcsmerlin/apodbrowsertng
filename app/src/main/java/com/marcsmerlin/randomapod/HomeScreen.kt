@@ -25,7 +25,7 @@ import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.launch
 
 /*
-HomeScreen: Composable that serves as the home screen for the Random Apod app.
+HomeScreen: Composable that functions as the home screen for the Random Apod app.
  */
 @Composable
 fun HomeScreen(
@@ -176,7 +176,7 @@ private fun ErrorContent(
         modifier = Modifier.fillMaxSize(),
     ) {
         Text(
-            text = "An error has occurred accessing the Apod archive:\n+ $error",
+            text = "An error has occurred accessing the Apod archive:\n+$error",
             textAlign = TextAlign.Center,
         )
     }

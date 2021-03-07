@@ -64,9 +64,9 @@ fun BitmapImageForUrl(
                             bitmap = value.bitmap.asImageBitmap(),
                             contentDescription = contentDescription,
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .padding(start = 12.dp, end = 12.dp),
-                            contentScale = ContentScale.FillWidth,
+                            contentScale = ContentScale.Fit,
                         )
                     }
                 }

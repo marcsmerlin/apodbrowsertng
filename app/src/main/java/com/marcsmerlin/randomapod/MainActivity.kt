@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appContainer = (application as ApodApplication).container
+        val appContainer: AppContainer = (application as ApodApplication).container
 
         viewModel = ViewModelProvider(
             this,
