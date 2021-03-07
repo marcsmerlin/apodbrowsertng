@@ -16,16 +16,10 @@ interface ApodViewModel {
         data class Error(val error: Exception): Result()
     }
 
-    fun isHome(): Boolean
-    fun goHome()
+    fun isToday(): Boolean
+    fun goToday()
 
     fun getRandom()
-
-    fun hasNext(): Boolean
-    fun getNext()
-
-    fun hasPrevious(): Boolean
-    fun getPrevious()
 
     fun onCleared()
 }

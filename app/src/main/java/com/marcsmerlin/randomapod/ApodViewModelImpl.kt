@@ -34,7 +34,7 @@ class ApodViewModelImpl(
     }
 
     init {
-        repository.queueHomeRequest(
+        repository.queueTodayRequest(
             { apod: Apod ->
                 _status.value = ApodViewModel.Status.Operational
                 _result = mutableStateOf(ApodViewModel.Result.Data(apod))
@@ -47,10 +47,10 @@ class ApodViewModelImpl(
         )
     }
 
-    override fun isHome(): Boolean = repository.isHome()
+    override fun isToday(): Boolean = repository.isToday()
 
-    override fun goHome() {
-        repository.queueHomeRequest(
+    override fun goToday() {
+        repository.queueTodayRequest(
             ::apodListener,
             ::errorListener,
         )
@@ -62,25 +62,6 @@ class ApodViewModelImpl(
             ::errorListener,
         )
     }
-
-    override fun hasNext(): Boolean = repository.hasNextDate()
-
-    override fun getNext() {
-        repository.queueRequestForNextDate(
-            ::apodListener,
-            ::errorListener,
-        )
-    }
-
-    override fun hasPrevious(): Boolean = repository.hasPreviousDate()
-
-    override fun getPrevious() {
-        repository.queueRequestForPreviousDate(
-            ::apodListener,
-            ::errorListener,
-        )
-    }
-
 
     override fun onCleared() {
         super.onCleared()

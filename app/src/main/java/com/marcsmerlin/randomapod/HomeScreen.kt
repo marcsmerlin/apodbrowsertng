@@ -37,8 +37,8 @@ fun HomeScreen(
         bitmapLoader = bitmapLoader,
         result = viewModel.result,
         navHostController = navHostController,
-        isHome = viewModel::isHome,
-        goHome = viewModel::goHome,
+        isToday = viewModel::isToday,
+        goHome = viewModel::goToday,
         getRandom = viewModel::getRandom,
     )
 }
@@ -49,7 +49,7 @@ private fun MyScaffold(
     bitmapLoader: IBitmapLoader,
     result: State<ApodViewModel.Result>,
     navHostController: NavHostController,
-    isHome: () -> Boolean,
+    isToday: () -> Boolean,
     goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
@@ -70,7 +70,7 @@ private fun MyScaffold(
                 appName = appName,
                 scaffoldState = scaffoldState,
                 coroutineScope = coroutineScope,
-                isHome = isHome,
+                isHome = isToday,
                 goHome = goHome,
                 getRandom = getRandom,
             )

@@ -19,10 +19,10 @@ class ApodRepository(
     private val firstDate = LocalDate.parse(firstDate)
     private val baseUrl = "${endpoint}?api_key=$apiKey"
 
-    private lateinit var homeDate: LocalDate
+    private lateinit var todayDate: LocalDate
     private lateinit var currentDate: LocalDate
 
-    fun queueHomeRequest(
+    fun queueTodayRequest(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
@@ -31,19 +31,19 @@ class ApodRepository(
             { string ->
                 val apod = Apod(string)
                 currentDate = apod.localDate
-                homeDate = currentDate
+                todayDate = currentDate
                 apodListener(apod)
             },
             errorListener,
         )
     }
 
-    fun isHome(): Boolean {
-        return currentDate.isEqual(homeDate)
+    fun isToday(): Boolean {
+        return currentDate.isEqual(todayDate)
     }
 
     fun hasNextDate(): Boolean {
-        return currentDate.isBefore(homeDate)
+        return currentDate.isBefore(todayDate)
     }
 
     private fun urlForDate(date: LocalDate): String {
@@ -92,7 +92,7 @@ class ApodRepository(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, homeDate)
+        val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, todayDate)
         val randomDate = firstDate.plusDays(Random.nextLong(until = daysSinceFirstDate))
 
         queue.addStringRequest(
