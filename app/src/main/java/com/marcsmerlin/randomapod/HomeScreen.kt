@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +35,7 @@ fun HomeScreen(
     MyScaffold(
         appName = appName,
         bitmapLoader = bitmapLoader,
-        result = viewModel.result.value,
+        result = viewModel.result,
         navHostController = navHostController,
         isHome = viewModel::isHome,
         goHome = viewModel::goHome,
@@ -46,7 +47,7 @@ fun HomeScreen(
 private fun MyScaffold(
     appName: String,
     bitmapLoader: IBitmapLoader,
-    result: ApodViewModel.Result,
+    result: State<ApodViewModel.Result>,
     navHostController: NavHostController,
     isHome: () -> Boolean,
     goHome: () -> Unit,
@@ -185,21 +186,21 @@ private fun MyTopBar(
 private fun MyContent(
     bitmapLoader: IBitmapLoader,
     navHostController: NavHostController,
-    result: ApodViewModel.Result,
+    result: State<ApodViewModel.Result>,
 
     ) {
-    when (result) {
+    when (val value = result.value) {
 
         is ApodViewModel.Result.Data ->
             ApodContent(
                 bitmapLoader = bitmapLoader,
-                apod = result.apod,
+                apod = value.apod,
                 goToDetail = { navHostController.navigate(route = "detail") },
             )
 
         is ApodViewModel.Result.Error ->
             ErrorContent(
-                error = result.error
+                error = value.error
             )
     }
 }
