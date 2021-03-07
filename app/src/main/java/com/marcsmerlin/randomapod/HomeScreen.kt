@@ -92,36 +92,31 @@ private fun MyDrawerContent(
     navHostController: NavHostController,
     coroutineScope: CoroutineScope,
 ) {
+    @Composable
+    fun MyTextButton(
+        text: String,
+        route: String,
+    ) {
+        TextButton(
+            onClick = {
+                coroutineScope.launch {
+                    scaffoldState.drawerState.close()
+                    navHostController.navigate(route)
+                }
+            },
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.h6,
+            )
+        }
+    }
+
     Column(
         Modifier.padding(start = 24.dp, top = 24.dp)
     ) {
-
-        TextButton(
-            onClick = {
-                coroutineScope.launch {
-                    scaffoldState.drawerState.close()
-                    navHostController.navigate("about")
-                }
-            },
-        ) {
-            Text(
-                text = "About",
-                style = MaterialTheme.typography.h6,
-            )
-        }
-        TextButton(
-            onClick = {
-                coroutineScope.launch {
-                    scaffoldState.drawerState.close()
-                    navHostController.navigate("credits")
-                }
-            },
-        ) {
-            Text(
-                text = "Credits",
-                style = MaterialTheme.typography.h6,
-            )
-        }
+        MyTextButton(text = "About", route = "about")
+        MyTextButton(text = "Credits", route = "credits")
     }
 }
 
