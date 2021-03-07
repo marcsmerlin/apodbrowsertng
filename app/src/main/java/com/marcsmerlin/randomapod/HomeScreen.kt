@@ -14,7 +14,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,6 +129,24 @@ private fun MyTopBar(
     goHome: () -> Unit,
     getRandom: () -> Unit,
 ) {
+    @Composable
+    fun MyActionButton(
+        imageVector: ImageVector,
+        contentDescription: String,
+        onClick: () -> Unit,
+        enabled: Boolean = true,
+    ) {
+        IconButton(
+            onClick = onClick,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = contentDescription,
+            )
+        }
+    }
+
     TopAppBar(
         title = { Text(text = appName) },
 
@@ -147,33 +165,19 @@ private fun MyTopBar(
             }
         },
         actions = {
-            IconButton(onClick = getRandom) {
-                Icon(
-                    imageVector = Icons.Filled.Refresh,
-                    contentDescription = "Fetch random APOD"
-                )
-            }
 
-            IconButton(
+            MyActionButton(
+                imageVector = Icons.Filled.Refresh,
+                contentDescription = "Fetch random APOD",
+                onClick = getRandom
+            )
+
+            MyActionButton(
+                imageVector = Icons.Filled.Home,
+                contentDescription = "Go to today's APOD",
                 onClick = goHome,
-                enabled = !isHome()
-            ) {
-                val contentDescription = "Go to most recent APOD"
-
-                if (!isHome()) {
-                    Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = contentDescription,
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = contentDescription,
-                        tint = Color.DarkGray,
-                    )
-                }
-
-            }
+//                enabled = !isHome(),
+            )
         })
 }
 
