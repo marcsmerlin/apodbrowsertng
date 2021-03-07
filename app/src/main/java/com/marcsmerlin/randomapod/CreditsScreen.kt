@@ -12,10 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-/*
-CreditsScreen: Composable used to present the "Credits" info for the Random Apod app.
- */
-
 private val CreditsText =
     """
 The Random Apod app was created by Marc Merlin as an exercise to learn the Kotlin programming language and the Android Development environment, in particular the newly introduced Jetpack Compose user interface framework. It is offered for use free of charge as a tribute to NASA's Astronomy Picture of the Day (Apod) website.

@@ -12,10 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-/*
-AboutScreen: Composable used to present the About info for the Random Apod app.
- */
-
 private val AboutText =
     """
 Except for brief interruptions due to federal government shutdowns, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995.

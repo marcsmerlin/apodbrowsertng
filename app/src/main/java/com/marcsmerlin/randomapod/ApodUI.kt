@@ -11,10 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
 
-/*
-ApodUI: Top-level Composable used to couple resources supplied from the app's MainActivity to its
-user interface.
- */
 @Composable
 fun ApodUI(
     appName: String,

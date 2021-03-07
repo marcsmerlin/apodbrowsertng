@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-/*
-ApodViewModel: Realization of the ApodViewModel interface which depends on an ApodRepository.
- */
 class ApodViewModelImpl(
     private val repository: ApodRepository
 ) : ViewModel(), ApodViewModel {
@@ -25,8 +22,14 @@ class ApodViewModelImpl(
     override val result: State<ApodViewModel.Result>
         get() = _result
 
+    private lateinit var _isToday: MutableState<Boolean>
+
+    override val isToday: State<Boolean>
+        get() = _isToday
+
     private fun apodListener(apod: Apod) {
         _result.value = ApodViewModel.Result.Data(apod)
+        _isToday.value = repository.isToday()
     }
 
     private fun errorListener(error: Exception) {
@@ -38,6 +41,7 @@ class ApodViewModelImpl(
             { apod: Apod ->
                 _status.value = ApodViewModel.Status.Operational
                 _result = mutableStateOf(ApodViewModel.Result.Data(apod))
+                _isToday = mutableStateOf(true)
             },
 
             { error: Exception ->
@@ -46,8 +50,6 @@ class ApodViewModelImpl(
             },
         )
     }
-
-    override fun isToday(): Boolean = repository.isToday()
 
     override fun goToday() {
         repository.queueTodayRequest(

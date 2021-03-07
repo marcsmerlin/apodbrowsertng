@@ -35,10 +35,10 @@ fun HomeScreen(
     MyScaffold(
         appName = appName,
         bitmapLoader = bitmapLoader,
-        result = viewModel.result,
         navHostController = navHostController,
-        isToday = viewModel::isToday,
-        goHome = viewModel::goToday,
+        result = viewModel.result,
+        isToday = viewModel.isToday,
+        goToday = viewModel::goToday,
         getRandom = viewModel::getRandom,
     )
 }
@@ -49,8 +49,8 @@ private fun MyScaffold(
     bitmapLoader: IBitmapLoader,
     result: State<ApodViewModel.Result>,
     navHostController: NavHostController,
-    isToday: () -> Boolean,
-    goHome: () -> Unit,
+    isToday: State<Boolean>,
+    goToday: () -> Unit,
     getRandom: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -70,8 +70,8 @@ private fun MyScaffold(
                 appName = appName,
                 scaffoldState = scaffoldState,
                 coroutineScope = coroutineScope,
-                isHome = isToday,
-                goHome = goHome,
+                isToday = isToday,
+                goToday = goToday,
                 getRandom = getRandom,
             )
         },
@@ -107,13 +107,13 @@ private fun MyDrawerContent(
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.h5,
             )
         }
     }
 
     Column(
-        Modifier.padding(start = 24.dp, top = 24.dp)
+        Modifier.padding(start = 36.dp, top = 36.dp)
     ) {
         MyTextButton(text = "About", route = "about")
         MyTextButton(text = "Credits", route = "credits")
@@ -125,8 +125,8 @@ private fun MyTopBar(
     appName: String,
     scaffoldState: ScaffoldState,
     coroutineScope: CoroutineScope,
-    isHome: () -> Boolean,
-    goHome: () -> Unit,
+    isToday: State<Boolean>,
+    goToday: () -> Unit,
     getRandom: () -> Unit,
 ) {
     @Composable
@@ -175,8 +175,8 @@ private fun MyTopBar(
             MyActionButton(
                 imageVector = Icons.Filled.Home,
                 contentDescription = "Go to today's APOD",
-                onClick = goHome,
-//                enabled = !isHome(),
+                onClick = goToday,
+                enabled = !isToday.value
             )
         })
 }
