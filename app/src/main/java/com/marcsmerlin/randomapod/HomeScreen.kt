@@ -21,11 +21,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
 import com.marcsmerlin.randomapod.utils.BitmapImageForUrl
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-/*
-HomeScreen: Composable that functions as the home screen for the Random Apod app.
- */
 @Composable
 fun HomeScreen(
     appName: String,
@@ -33,7 +31,7 @@ fun HomeScreen(
     viewModel: ApodViewModel,
     navHostController: NavHostController,
 ) {
-    HomeScreenScaffold(
+    MyScaffold(
         appName = appName,
         bitmapLoader = bitmapLoader,
         result = viewModel.result.value,
@@ -45,7 +43,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeScreenScaffold(
+private fun MyScaffold(
     appName: String,
     bitmapLoader: IBitmapLoader,
     result: ApodViewModel.Result,
@@ -60,123 +58,149 @@ private fun HomeScreenScaffold(
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
-            Column(
-                Modifier.padding(start = 24.dp)
-            ) {
-                Text(
-                    text = "Logo",
-                    color = Color.LightGray,
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
-                )
-                Divider()
-                TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            scaffoldState.drawerState.close()
-                            navHostController.navigate("about")
-                        }
-                    },
-                ) {
-                    Text(
-                        text = "About",
-                        style = MaterialTheme.typography.h6,
-                    )
-                }
-                Spacer(modifier = Modifier.padding(top = 18.dp))
-                TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            scaffoldState.drawerState.close()
-                            navHostController.navigate("credits")
-                        }
-                    },
-                ) {
-                    Text(
-                        text = "Credits",
-                        style = MaterialTheme.typography.h6,
-                    )
-                }
-            }
+            MyDrawerContent(
+                scaffoldState = scaffoldState,
+                navHostController = navHostController,
+                coroutineScope = coroutineScope,
+            )
         },
         topBar = {
-            TopAppBar(
-                title = { Text(text = appName) },
-
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                scaffoldState.drawerState.open()
-                            }
-                        })
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = getRandom) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "Fetch random APOD"
-                        )
-                    }
-
-                    IconButton(
-                        onClick = goHome,
-                        enabled = !isHome()
-                    ) {
-                        val contentDescription = "Go to most recent APOD"
-
-                        if (!isHome()) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = contentDescription,
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = contentDescription,
-                                tint = Color.DarkGray,
-                            )
-                        }
-
-                    }
-                })
+            MyTopBar(
+                appName = appName,
+                scaffoldState = scaffoldState,
+                coroutineScope = coroutineScope,
+                isHome = isHome,
+                goHome = goHome,
+                getRandom = getRandom,
+            )
         },
         content = {
-            when (result) {
+            MyContent(
+                bitmapLoader = bitmapLoader,
+                navHostController = navHostController,
+                result = result,
+            )
 
-                is ApodViewModel.Result.Data ->
-                    ApodContent(
-                        bitmapLoader = bitmapLoader,
-                        apod = result.apod,
-                        goToDetail = { navHostController.navigate(route = "detail") },
-                    )
-
-                is ApodViewModel.Result.Error ->
-                    ErrorContent(
-                        error = result.error
-                    )
-            }
         },
     )
 }
 
 @Composable
-private fun ErrorContent(
-    error: Exception
+private fun MyDrawerContent(
+    scaffoldState: ScaffoldState,
+    navHostController: NavHostController,
+    coroutineScope: CoroutineScope,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
+    Column(
+        Modifier.padding(start = 24.dp, top = 24.dp)
     ) {
-        Text(
-            text = "An error has occurred accessing the Apod archive:\n+$error",
-            textAlign = TextAlign.Center,
-        )
+
+        TextButton(
+            onClick = {
+                coroutineScope.launch {
+                    scaffoldState.drawerState.close()
+                    navHostController.navigate("about")
+                }
+            },
+        ) {
+            Text(
+                text = "About",
+                style = MaterialTheme.typography.h6,
+            )
+        }
+        TextButton(
+            onClick = {
+                coroutineScope.launch {
+                    scaffoldState.drawerState.close()
+                    navHostController.navigate("credits")
+                }
+            },
+        ) {
+            Text(
+                text = "Credits",
+                style = MaterialTheme.typography.h6,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MyTopBar(
+    appName: String,
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope,
+    isHome: () -> Boolean,
+    goHome: () -> Unit,
+    getRandom: () -> Unit,
+) {
+    TopAppBar(
+        title = { Text(text = appName) },
+
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.open()
+                    }
+                })
+            {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = getRandom) {
+                Icon(
+                    imageVector = Icons.Filled.Refresh,
+                    contentDescription = "Fetch random APOD"
+                )
+            }
+
+            IconButton(
+                onClick = goHome,
+                enabled = !isHome()
+            ) {
+                val contentDescription = "Go to most recent APOD"
+
+                if (!isHome()) {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = contentDescription,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = contentDescription,
+                        tint = Color.DarkGray,
+                    )
+                }
+
+            }
+        })
+}
+
+@Composable
+private fun MyContent(
+    bitmapLoader: IBitmapLoader,
+    navHostController: NavHostController,
+    result: ApodViewModel.Result,
+
+    ) {
+    when (result) {
+
+        is ApodViewModel.Result.Data ->
+            ApodContent(
+                bitmapLoader = bitmapLoader,
+                apod = result.apod,
+                goToDetail = { navHostController.navigate(route = "detail") },
+            )
+
+        is ApodViewModel.Result.Error ->
+            ErrorContent(
+                error = result.error
+            )
     }
 }
 
@@ -196,7 +220,7 @@ private fun ApodContent(
                 bitmapLoader = bitmapLoader,
             )
         } else {
-            UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
+            UnsupportedMediaType(mediaType = apod.mediaType)
         }
 
         val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.50f)
@@ -235,18 +259,35 @@ private fun ApodContent(
 }
 
 @Composable
-private fun UnsupportedMediaTypeNotice(
+private fun UnsupportedMediaType(
     mediaType: String
 ) {
+    val text = """
+        Sorry, the media type "$mediaType" is not yet supported.
+        Click on the info button above for text details.
+        """.trimIndent()
+
+    TextNotice(text = text)
+}
+
+@Composable
+private fun ErrorContent(
+    error: Exception
+) {
+    val text = "An error has occurred accessing the Apod archive:\n+$error"
+
+    TextNotice(text = text)
+}
+
+
+@Composable
+private fun TextNotice(text: String) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = """
-                Sorry, the media type "$mediaType" is not yet supported.
-                Click on the info button above for Apod details.
-            """.trimIndent(),
+            text = text,
             textAlign = TextAlign.Center,
         )
     }
