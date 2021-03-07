@@ -81,7 +81,6 @@ private fun MyScaffold(
                 navHostController = navHostController,
                 result = result,
             )
-
         },
     )
 }

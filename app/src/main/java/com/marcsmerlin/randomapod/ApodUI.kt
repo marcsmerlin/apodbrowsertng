@@ -2,7 +2,12 @@ package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +56,20 @@ private fun OperationalScreen(
 ) {
     val navHostController = rememberNavController()
 
+    @Composable
+    fun GoBackTopBar() {
+        TopAppBar(
+            title = { Text(text = appName) },
+            navigationIcon = {
+                IconButton(onClick = { navHostController.popBackStack() }) {
+                    Icon(
+                        Icons.Filled.ArrowBack,
+                        contentDescription = "Go back",
+                    )
+                }
+            })
+    }
+
     NavHost(
         navController = navHostController,
         startDestination = "home",
@@ -65,21 +84,18 @@ private fun OperationalScreen(
         }
         composable(route = "detail") {
             DetailScreen(
-                appName = appName,
                 viewModel = viewModel,
-                goBack = { navHostController.popBackStack() },
+                topBar = { GoBackTopBar() },
             )
         }
         composable(route = "about") {
             AboutScreen(
-                appName = appName,
-                goBack = { navHostController.popBackStack() },
+                topBar = { GoBackTopBar() },
             )
         }
         composable(route = "credits") {
             CreditsScreen(
-                appName = appName,
-                goBack = { navHostController.popBackStack() },
+                topBar = { GoBackTopBar() },
             )
         }
     }
