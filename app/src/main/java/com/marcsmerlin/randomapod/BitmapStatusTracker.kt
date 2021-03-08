@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -16,40 +17,38 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.marcsmerlin.randomapod.utils.BitmapStatus
-import com.marcsmerlin.randomapod.utils.IBitmapLoader
 
 @Composable
-fun BitmapImageForUrl(
-    url: String,
-    bitmapLoader: IBitmapLoader,
-    ) {
-    val bitmapStatus = remember(url) { bitmapLoader.queueRequest(url) }
-
+fun BitmapStatusTracker(
+    bitmapStatus: State<BitmapStatus>
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
         when (val value = bitmapStatus.value) {
-            BitmapStatus.Loading ->
+            is BitmapStatus.Loading -> {
                 Text(
-                    text = "Downloading image\u2026",
+                    text = "Downloading image from ${value.url}\u2026",
                     textAlign = TextAlign.Center,
                 )
+            }
 
-            is BitmapStatus.Error ->
+            is BitmapStatus.Error -> {
                 Text(
-                    text = "Error downloading image from:\n$url\n${value.error}",
+                    text = "Error downloading image from ${value.url}:\n${value.error}",
                     textAlign = TextAlign.Center,
                 )
+            }
 
             is BitmapStatus.Success -> {
-                val zoomIn = remember(url) { mutableStateOf(true) }
+                val zoomIn = remember { mutableStateOf(true) }
 
                 Box(
                     modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
                 ) {
-                    val contentDescription = "Image downloaded from $url"
+                    val contentDescription = "Image downloaded from ${value.url}"
 
                     if (zoomIn.value) {
                         Image(

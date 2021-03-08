@@ -14,17 +14,27 @@ class BitmapLoader(
 
         Log.i("$tag", "Bitmap request queued for: $url")
 
-        val result = mutableStateOf<BitmapStatus>(BitmapStatus.Loading)
+        val result = mutableStateOf<BitmapStatus>(
+            BitmapStatus.Loading(url = url)
+        )
 
         queue.addBitmapRequest(
             url = url,
             { bitmap ->
-                result.value = BitmapStatus.Success(bitmap)
+                result.value =
+                    BitmapStatus.Success(
+                        url = url,
+                        bitmap = bitmap
+                    )
 
                 Log.i("$tag", "Bitmap received for: $url")
             },
             { exception ->
-                result.value = BitmapStatus.Error(exception)
+                result.value =
+                    BitmapStatus.Error(
+                        url = url,
+                        error = exception
+                    )
             },
         )
 

@@ -213,9 +213,8 @@ private fun ApodContent(
     ) {
 
         if (apod.isImage()) {
-            BitmapImageForUrl(
-                url = apod.url,
-                bitmapLoader = bitmapLoader,
+            BitmapStatusTracker(
+                bitmapStatus = bitmapLoader.queueRequest(apod.url),
             )
         } else {
             UnsupportedMediaType(mediaType = apod.mediaType)

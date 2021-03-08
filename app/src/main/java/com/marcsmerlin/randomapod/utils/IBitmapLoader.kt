@@ -3,10 +3,11 @@ package com.marcsmerlin.randomapod.utils
 import android.graphics.Bitmap
 import androidx.compose.runtime.State
 
-sealed class BitmapStatus {
-    object Loading : BitmapStatus()
-    data class Success(val bitmap: Bitmap) : BitmapStatus()
-    data class Error(val error: Exception) : BitmapStatus()
+sealed class BitmapStatus(val url: String) {
+
+    class Loading(url: String) : BitmapStatus(url)
+    class Success(url:String, val bitmap: Bitmap) : BitmapStatus(url)
+    class Error(url: String, val error: Exception) : BitmapStatus(url)
 }
 
 interface IBitmapLoader {
