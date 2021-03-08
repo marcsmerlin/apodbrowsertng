@@ -225,18 +225,16 @@ private fun ApodContent(
     ) {
 
         @Composable
-        fun LoadingNotice(url: String) {
-            Text(
-                text = "Downloading image from $url\u2026",
-                textAlign = TextAlign.Center,
+        fun ImageLoadingNotice(url: String) {
+            TextNotice(
+                text = "Downloading image for: $url\u2026",
             )
         }
 
         @Composable
-        fun ErrorNotice(url: String, error: Exception) {
-            Text(
-                text = "Error downloading image from $url:\n$error",
-                textAlign = TextAlign.Center,
+        fun ImageErrorNotice(url: String, error: Exception) {
+            TextNotice(
+                text = "Error downloading image for $url:\n$error",
             )
         }
 
@@ -247,7 +245,7 @@ private fun ApodContent(
             Box(
                 modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
             ) {
-                val contentDescription = "Image downloaded from $url"
+                val contentDescription = "Image downloaded for $url"
 
                 if (zoomIn.value) {
                     Image(
@@ -277,10 +275,10 @@ private fun ApodContent(
                 bitmapStatus = bitmapStatus,
                 modifier = Modifier.fillMaxSize(),
                 loading = { url ->
-                    LoadingNotice(url = url)
+                    ImageLoadingNotice(url = url)
                 },
                 error = { url, error ->
-                    ErrorNotice(url = url, error = error)
+                    ImageErrorNotice(url = url, error = error)
                 },
                 success = { url, bitmap ->
                     SuccessNotice(url = url, bitmap = bitmap)
@@ -377,12 +375,14 @@ private fun ErrorContent(
 @Composable
 private fun TextNotice(text: String) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(start = 18.dp, end = 18.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start,
         )
     }
 }

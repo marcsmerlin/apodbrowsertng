@@ -13,8 +13,8 @@ fun BitmapStatusTracker(
     bitmapStatus: State<BitmapStatus>,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
-    loading: @Composable (String) -> Unit,
-    error: @Composable (String, Exception) -> Unit,
+    loading: @Composable (String) -> Unit = { _ -> },
+    error: @Composable (String, Exception) -> Unit = { _, _ -> },
     success: @Composable (String, Bitmap) -> Unit,
 ) {
     Box(
