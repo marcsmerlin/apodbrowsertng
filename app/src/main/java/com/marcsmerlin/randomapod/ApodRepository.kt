@@ -11,9 +11,8 @@ class ApodRepository(
     firstDate: String,
     private val queue: IStringQueue
 ) {
-
     private val firstDate = LocalDate.parse(firstDate)
-    private val baseUrl = "${endpoint}?api_key=$apiKey"
+    private val baseUrl = "${endpoint}?api_key=$apiKey&thumbs=true"
 
     private lateinit var todayDate: LocalDate
     private lateinit var currentDate: LocalDate
