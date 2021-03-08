@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -62,6 +63,7 @@ private fun MyScaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
             MyDrawerContent(
+                appName = appName,
                 scaffoldState = scaffoldState,
                 navHostController = navHostController,
                 coroutineScope = coroutineScope,
@@ -89,6 +91,7 @@ private fun MyScaffold(
 
 @Composable
 private fun MyDrawerContent(
+    appName: String,
     scaffoldState: ScaffoldState,
     navHostController: NavHostController,
     coroutineScope: CoroutineScope,
@@ -116,6 +119,12 @@ private fun MyDrawerContent(
     Column(
         Modifier.padding(start = 36.dp, top = 36.dp)
     ) {
+        Text(
+            text = appName,
+            style = MaterialTheme.typography.h5,
+            color = Color.LightGray,
+        )
+        Spacer(Modifier.padding(bottom = 18.dp))
         MyTextButton(text = "About", route = "about")
         MyTextButton(text = "Credits", route = "credits")
     }
