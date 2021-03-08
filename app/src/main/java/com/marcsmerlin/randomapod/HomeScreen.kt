@@ -1,6 +1,9 @@
 package com.marcsmerlin.randomapod
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,12 +12,12 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -213,8 +216,55 @@ private fun ApodContent(
     ) {
 
         if (apod.isImage()) {
+
+            val loading: @Composable (String) -> Unit = { url ->
+                Text(
+                    text = "Downloading image from $url\u2026",
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            val error: @Composable (String, Exception) -> Unit = { url, error ->
+                Text(
+                    text = "Error downloading image from $url:\n$error",
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            val success: @Composable (String, Bitmap) -> Unit = { url, bitmap ->
+                val zoomIn = remember { mutableStateOf(true) }
+
+                Box(
+                    modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
+                ) {
+                    val contentDescription = "Image downloaded from $url"
+
+                    if (zoomIn.value) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = contentDescription,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                        )
+                    } else {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = contentDescription,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(all = 12.dp),
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
+                }
+            }
+
             BitmapStatusTracker(
                 bitmapStatus = bitmapLoader.queueRequest(apod.url),
+                modifier = Modifier.fillMaxSize(),
+                loading = loading,
+                error = error,
+                success = success
             )
         } else {
             UnsupportedMediaType(mediaType = apod.mediaType)
