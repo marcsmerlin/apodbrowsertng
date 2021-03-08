@@ -224,62 +224,89 @@ private fun ApodContent(
         modifier = Modifier.fillMaxSize(),
     ) {
 
-        if (apod.isImage()) {
+        @Composable
+        fun LoadingNotice(url: String) {
+            Text(
+                text = "Downloading image from $url\u2026",
+                textAlign = TextAlign.Center,
+            )
+        }
 
-            val loading: @Composable (String) -> Unit = { url ->
-                Text(
-                    text = "Downloading image from $url\u2026",
-                    textAlign = TextAlign.Center,
-                )
+        @Composable
+        fun ErrorNotice(url: String, error: Exception) {
+            Text(
+                text = "Error downloading image from $url:\n$error",
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        @Composable
+        fun SuccessNotice(url: String, bitmap: Bitmap) {
+            val zoomIn = remember { mutableStateOf(true) }
+
+            Box(
+                modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
+            ) {
+                val contentDescription = "Image downloaded from $url"
+
+                if (zoomIn.value) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = contentDescription,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = contentDescription,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 12.dp),
+                        contentScale = ContentScale.Fit,
+                    )
+                }
+            }
+        }
+
+        @Composable
+        fun BitmapForUrl(requestedUrl: String) {
+            val bitmapStatus = bitmapLoader.queueRequest(requestedUrl)
+
+            BitmapStatusTracker(
+                bitmapStatus = bitmapStatus,
+                modifier = Modifier.fillMaxSize(),
+                loading = { url ->
+                    LoadingNotice(url = url)
+                },
+                error = { url, error ->
+                    ErrorNotice(url = url, error = error)
+                },
+                success = { url, bitmap ->
+                    SuccessNotice(url = url, bitmap = bitmap)
+                }
+            )
+        }
+
+        when (apod.mediaType) {
+            "image" -> {
+                BitmapForUrl(requestedUrl = apod.url)
             }
 
-            val error: @Composable (String, Exception) -> Unit = { url, error ->
-                Text(
-                    text = "Error downloading image from $url:\n$error",
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            val success: @Composable (String, Bitmap) -> Unit = { url, bitmap ->
-                val zoomIn = remember { mutableStateOf(true) }
-
-                Box(
-                    modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
-                ) {
-                    val contentDescription = "Image downloaded from $url"
-
-                    if (zoomIn.value) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = contentDescription,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                        )
-                    } else {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = contentDescription,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(all = 12.dp),
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
+            "video" -> {
+                if (apod.hasThumbnail()) {
+                    BitmapForUrl(requestedUrl = apod.thumbnailUrl)
+                } else {
+                    NoThumbnailAvailableForVideoNotice()
                 }
             }
 
-            BitmapStatusTracker(
-                bitmapStatus = bitmapLoader.queueRequest(apod.url),
-                modifier = Modifier.fillMaxSize(),
-                loading = loading,
-                error = error,
-                success = success
-            )
-        } else {
-            UnsupportedMediaType(mediaType = apod.mediaType)
+            else -> {
+                UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
+            }
         }
 
-        val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.50f)
+        val overlayBackground = MaterialTheme.colors.surface.copy(alpha = 0.66f)
 
         Text(
             text = "${apod.title} (${apod.date})",
@@ -315,12 +342,23 @@ private fun ApodContent(
 }
 
 @Composable
-private fun UnsupportedMediaType(
+private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
     val text = """
-        Sorry, the media type "$mediaType" is not yet supported.
-        Click on the info button above for text details.
+        Sorry, the media type "$mediaType" is not supported.
+        Click on the info button above to see text details for this Apod.
+        """.trimIndent()
+
+    TextNotice(text = text)
+}
+
+@Composable
+private fun NoThumbnailAvailableForVideoNotice(
+) {
+    val text = """
+        Sorry, there is no thumbnail available for this video.
+        Click on the info button above to see text details for this Apod.
         """.trimIndent()
 
     TextNotice(text = text)
@@ -330,7 +368,7 @@ private fun UnsupportedMediaType(
 private fun ErrorContent(
     error: Exception
 ) {
-    val text = "An error has occurred accessing the Apod archive:\n+$error"
+    val text = "An error has occurred accessing the Apod archive:\n$error"
 
     TextNotice(text = text)
 }
