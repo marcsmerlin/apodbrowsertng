@@ -343,10 +343,8 @@ private fun ApodContent(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    val text = """
-        Sorry, the media type "$mediaType" is not supported.
-        Click on the info button above to see text details for this Apod.
-        """.trimIndent()
+    val text =
+        "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
@@ -354,10 +352,8 @@ private fun UnsupportedMediaTypeNotice(
 @Composable
 private fun NoThumbnailAvailableForVideoNotice(
 ) {
-    val text = """
-        Sorry, there is no thumbnail available for this video.
-        Click on the info button above to see text details for this Apod.
-        """.trimIndent()
+    val text =
+        "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
@@ -376,7 +372,7 @@ private fun ErrorContent(
 private fun TextNotice(text: String) {
     Box(
         modifier = Modifier
-            .wrapContentSize()
+            .fillMaxSize()
             .padding(start = 18.dp, end = 18.dp),
         contentAlignment = Alignment.Center
     ) {
