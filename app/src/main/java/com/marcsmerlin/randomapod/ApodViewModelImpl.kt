@@ -45,8 +45,7 @@ class ApodViewModelImpl(
             },
 
             { error: Exception ->
-                _status.value = ApodViewModel.Status.Operational
-                _result = mutableStateOf(ApodViewModel.Result.Error(error))
+                _status.value = ApodViewModel.Status.InitializationFailure(error)
             },
         )
     }

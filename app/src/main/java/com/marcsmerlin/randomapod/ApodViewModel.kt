@@ -9,6 +9,7 @@ interface ApodViewModel {
 
     sealed class Status {
         object Initializing : Status()
+        data class InitializationFailure(val error: Exception) : Status()
         object Operational : Status()
     }
 
