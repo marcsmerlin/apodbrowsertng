@@ -53,7 +53,7 @@ private fun InitializingScreen(
 }
 
 @Composable
-fun InitializationFailureAlert(
+private fun InitializationFailureAlert(
     appName: String,
     error: Exception
 ) {
