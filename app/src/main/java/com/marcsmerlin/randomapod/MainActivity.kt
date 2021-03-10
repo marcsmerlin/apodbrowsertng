@@ -7,6 +7,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import com.marcsmerlin.randomapod.ui.theme.ApodBrowserTheme
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ApodViewModel
 
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             ApodBrowserTheme {
-                ApodUI(
+                TopScreen(
                     appName = stringResource(id = R.string.app_name),
                     bitmapLoader = appContainer.bitmapLoader,
                     viewModel = viewModel,

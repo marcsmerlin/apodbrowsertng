@@ -6,16 +6,11 @@ import com.marcsmerlin.randomapod.utils.BitmapLoader
 import com.marcsmerlin.randomapod.utils.VolleyBitmapQueue
 import com.marcsmerlin.randomapod.utils.VolleyStringQueue
 
-interface AppContainer {
-    val viewModelFactory: ApodViewModelFactory
-    val bitmapLoader: BitmapLoader
-}
-
-class AppContainerImpl(
+class AppContainer(
     private val applicationContext: Context
-) : AppContainer {
+) {
 
-    override val viewModelFactory: ApodViewModelFactory
+    val viewModelFactory: ApodViewModelImpl.Factory
 
     init {
         val archive: ApodArchive by lazy {
@@ -28,10 +23,10 @@ class AppContainerImpl(
             )
         }
 
-        viewModelFactory = ApodViewModelFactory(archive)
+        viewModelFactory = ApodViewModelImpl.Factory(archive)
     }
 
-    override val bitmapLoader: BitmapLoader by lazy {
+    val bitmapLoader: BitmapLoader by lazy {
         BitmapLoaderImpl(
             queue = VolleyBitmapQueue(
                 context = applicationContext

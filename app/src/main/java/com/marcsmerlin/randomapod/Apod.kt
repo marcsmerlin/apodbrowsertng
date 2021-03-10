@@ -34,6 +34,5 @@ data class Apod(
     fun isImage(): Boolean = mediaType == "image"
     fun isVideo(): Boolean = mediaType == "video"
     fun hasCopyrightInfo(): Boolean = copyrightInfo != ""
-    fun hasServiceVersion(): Boolean = serviceVersion != ""
     fun hasThumbnail(): Boolean = thumbnailUrl != ""
 }

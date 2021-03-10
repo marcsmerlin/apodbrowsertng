@@ -15,7 +15,7 @@ import com.marcsmerlin.randomapod.utils.BitmapLoader
 import kotlin.system.exitProcess
 
 @Composable
-fun ApodUI(
+fun TopScreen(
     appName: String,
     bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,

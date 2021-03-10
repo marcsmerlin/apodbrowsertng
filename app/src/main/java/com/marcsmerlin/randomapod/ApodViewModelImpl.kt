@@ -68,18 +68,18 @@ class ApodViewModelImpl(
         super.onCleared()
         archive.close()
     }
-}
 
-class ApodViewModelFactory(
-    private val archive: ApodArchive
-) :
-    ViewModelProvider.Factory {
+    class Factory(
+        private val archive: ApodArchive
+    ) :
+        ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ApodViewModelImpl::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ApodViewModelImpl(archive = archive) as T
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(ApodViewModelImpl::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return ApodViewModelImpl(archive = archive) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
