@@ -254,7 +254,8 @@ private fun ApodImage(
             Image(
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = contentDescription,
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .matchParentSize(),
                 contentScale = ContentScale.Crop,
             )
         } else {

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class ApodViewModelImpl(
-    private val repository: ApodRepository
+    private val archive: ApodArchive
 ) : ViewModel(), ApodViewModel {
 
     private val _status = mutableStateOf<ApodViewModel.Status>(
@@ -29,7 +29,7 @@ class ApodViewModelImpl(
 
     private fun apodListener(apod: Apod) {
         _result.value = ApodViewModel.Result.Data(apod)
-        _isToday.value = repository.isToday()
+        _isToday.value = archive.isToday()
     }
 
     private fun errorListener(error: Exception) {
@@ -37,7 +37,7 @@ class ApodViewModelImpl(
     }
 
     init {
-        repository.queueTodayRequest(
+        archive.queueTodayRequest(
             { apod: Apod ->
                 _status.value = ApodViewModel.Status.Operational
                 _result = mutableStateOf(ApodViewModel.Result.Data(apod))
@@ -51,14 +51,14 @@ class ApodViewModelImpl(
     }
 
     override fun goToday() {
-        repository.queueTodayRequest(
+        archive.queueTodayRequest(
             ::apodListener,
             ::errorListener,
         )
     }
 
     override fun getRandom() {
-        repository.queueRequestForRandomDate(
+        archive.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,
         )
@@ -66,19 +66,19 @@ class ApodViewModelImpl(
 
     override fun onCleared() {
         super.onCleared()
-        repository.close()
+        archive.close()
     }
 }
 
 class ApodViewModelFactory(
-    private val repository: ApodRepository
+    private val archive: ApodArchive
 ) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ApodViewModelImpl::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ApodViewModelImpl(repository = repository) as T
+            return ApodViewModelImpl(archive = archive) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

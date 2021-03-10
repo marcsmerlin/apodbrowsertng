@@ -18,9 +18,9 @@ class AppContainerImpl(
     override val viewModelFactory: ApodViewModelFactory
 
     init {
-        val apodRepository: ApodRepository by lazy {
+        val archive: ApodArchive by lazy {
             val context = applicationContext
-            ApodRepository(
+            ApodArchive(
                 queue = VolleyStringQueue(context),
                 endpoint = context.getString(R.string.apod_api_endpoint),
                 apiKey = context.getString(R.string.apod_api_key),
@@ -28,7 +28,7 @@ class AppContainerImpl(
             )
         }
 
-        viewModelFactory = ApodViewModelFactory(apodRepository)
+        viewModelFactory = ApodViewModelFactory(archive)
     }
 
     override val bitmapLoader: BitmapLoader by lazy {

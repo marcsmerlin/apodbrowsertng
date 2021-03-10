@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
 
-class ApodRepository(
+class ApodArchive(
     endpoint: String,
     apiKey: String,
     firstDate: String,
