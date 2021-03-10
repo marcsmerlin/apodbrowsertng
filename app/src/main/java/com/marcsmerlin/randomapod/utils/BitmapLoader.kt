@@ -8,21 +8,21 @@ class BitmapLoader(
     private val queue: IBitmapQueue
 ) : IBitmapLoader {
 
-    override fun queueRequest(url: String): State<BitmapStatus> {
+    override fun queueRequest(url: String): State<BitmapDownloadStatus> {
 
         val tag = this::class.java
 
         Log.i("$tag", "Bitmap request queued for: $url")
 
-        val result = mutableStateOf<BitmapStatus>(
-            BitmapStatus.Loading(url = url)
+        val result = mutableStateOf<BitmapDownloadStatus>(
+            BitmapDownloadStatus.Loading(url = url)
         )
 
         queue.addBitmapRequest(
             url = url,
             { bitmap ->
                 result.value =
-                    BitmapStatus.Success(
+                    BitmapDownloadStatus.Done(
                         url = url,
                         bitmap = bitmap
                     )
@@ -31,7 +31,7 @@ class BitmapLoader(
             },
             { exception ->
                 result.value =
-                    BitmapStatus.Error(
+                    BitmapDownloadStatus.Failed(
                         url = url,
                         error = exception
                     )

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
+import com.marcsmerlin.randomapod.utils.BitmapDownloadStatus
 import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -122,7 +123,7 @@ private fun MyDrawerContent(
         Text(
             text = appName,
             style = MaterialTheme.typography.h5,
-            color = Color.LightGray,
+            color = Color.Gray,
         )
         Spacer(Modifier.padding(bottom = 18.dp))
         MyTextButton(text = "About", route = "about")
@@ -215,6 +216,63 @@ private fun MyContent(
 }
 
 @Composable
+private fun BitmapDownloadTracker(bitmapDownloadStatus: State<BitmapDownloadStatus>) {
+
+    when (val value = bitmapDownloadStatus.value) {
+        is BitmapDownloadStatus.Loading -> {
+
+            TextNotice(
+                text = "Downloading image for: ${value.url}\u2026",
+            )
+        }
+
+        is BitmapDownloadStatus.Failed -> {
+            TextNotice(
+                text = "Error downloading image for ${value.url}:\n${value.error}",
+            )
+        }
+
+        is BitmapDownloadStatus.Done -> {
+            ApodImage(value.url, value.bitmap)
+        }
+    }
+}
+
+@Composable
+private fun ApodImage(
+    url: String,
+    bitmap: Bitmap,
+) {
+    val zoomIn = remember { mutableStateOf(true) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { zoomIn.value = !zoomIn.value }
+    ) {
+        val contentDescription = "Image downloaded for $url"
+
+        if (zoomIn.value) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = contentDescription,
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = contentDescription,
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(all = 12.dp),
+                contentScale = ContentScale.Fit,
+            )
+        }
+    }
+}
+
+@Composable
 private fun ApodContent(
     bitmapLoader: IBitmapLoader,
     apod: Apod,
@@ -224,76 +282,14 @@ private fun ApodContent(
         modifier = Modifier.fillMaxSize(),
     ) {
 
-        @Composable
-        fun ImageLoadingNotice(url: String) {
-            TextNotice(
-                text = "Downloading image for: $url\u2026",
-            )
-        }
-
-        @Composable
-        fun ImageErrorNotice(url: String, error: Exception) {
-            TextNotice(
-                text = "Error downloading image for $url:\n$error",
-            )
-        }
-
-        @Composable
-        fun SuccessNotice(url: String, bitmap: Bitmap) {
-            val zoomIn = remember { mutableStateOf(true) }
-
-            Box(
-                modifier = Modifier.clickable { zoomIn.value = !zoomIn.value }
-            ) {
-                val contentDescription = "Image downloaded for $url"
-
-                if (zoomIn.value) {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = contentDescription,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                    )
-                } else {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = contentDescription,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(all = 12.dp),
-                        contentScale = ContentScale.Fit,
-                    )
-                }
-            }
-        }
-
-        @Composable
-        fun BitmapForUrl(requestedUrl: String) {
-            val bitmapStatus = bitmapLoader.queueRequest(requestedUrl)
-
-            BitmapStatusTracker(
-                bitmapStatus = bitmapStatus,
-                modifier = Modifier.fillMaxSize(),
-                loading = { url ->
-                    ImageLoadingNotice(url = url)
-                },
-                error = { url, error ->
-                    ImageErrorNotice(url = url, error = error)
-                },
-                success = { url, bitmap ->
-                    SuccessNotice(url = url, bitmap = bitmap)
-                }
-            )
-        }
-
         when (apod.mediaType) {
             "image" -> {
-                BitmapForUrl(requestedUrl = apod.url)
+                BitmapDownloadTracker(bitmapLoader.queueRequest(apod.url))
             }
 
             "video" -> {
                 if (apod.hasThumbnail()) {
-                    BitmapForUrl(requestedUrl = apod.thumbnailUrl)
+                    BitmapDownloadTracker(bitmapLoader.queueRequest(apod.thumbnailUrl))
                 } else {
                     NoThumbnailAvailableForVideoNotice()
                 }
@@ -362,7 +358,7 @@ private fun NoThumbnailAvailableForVideoNotice(
 private fun ErrorContent(
     error: Exception
 ) {
-    val text = "An error has occurred accessing the Apod archive:\n$error"
+    val text = "An error has occurred accessing the Apod archive. Click refresh to try again:\n$error"
 
     TextNotice(text = text)
 }
@@ -378,7 +374,7 @@ private fun TextNotice(text: String) {
     ) {
         Text(
             text = text,
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.Center,
         )
     }
 }
