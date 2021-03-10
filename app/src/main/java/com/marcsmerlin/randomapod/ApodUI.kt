@@ -11,13 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.marcsmerlin.randomapod.utils.IBitmapLoader
+import com.marcsmerlin.randomapod.utils.BitmapLoader
 import kotlin.system.exitProcess
 
 @Composable
 fun ApodUI(
     appName: String,
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
 ) {
     when (val value = viewModel.status.value) {
@@ -85,7 +85,7 @@ private fun InitializationFailureAlert(
 @Composable
 private fun OperationalScreen(
     appName: String,
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
 ) {
     val navHostController = rememberNavController()

@@ -1,14 +1,14 @@
 package com.marcsmerlin.randomapod
 
 import android.content.Context
+import com.marcsmerlin.randomapod.utils.BitmapLoaderImpl
 import com.marcsmerlin.randomapod.utils.BitmapLoader
-import com.marcsmerlin.randomapod.utils.IBitmapLoader
 import com.marcsmerlin.randomapod.utils.VolleyBitmapQueue
 import com.marcsmerlin.randomapod.utils.VolleyStringQueue
 
 interface AppContainer {
     val viewModelFactory: ApodViewModelFactory
-    val bitmapLoader: IBitmapLoader
+    val bitmapLoader: BitmapLoader
 }
 
 class AppContainerImpl(
@@ -31,8 +31,8 @@ class AppContainerImpl(
         viewModelFactory = ApodViewModelFactory(apodRepository)
     }
 
-    override val bitmapLoader: IBitmapLoader by lazy {
-        BitmapLoader(
+    override val bitmapLoader: BitmapLoader by lazy {
+        BitmapLoaderImpl(
             queue = VolleyBitmapQueue(
                 context = applicationContext
             )

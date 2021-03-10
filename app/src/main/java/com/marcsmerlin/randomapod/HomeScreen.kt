@@ -24,15 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
-import com.marcsmerlin.randomapod.utils.BitmapDownloadStatus
-import com.marcsmerlin.randomapod.utils.IBitmapLoader
+import com.marcsmerlin.randomapod.utils.BitmapLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     appName: String,
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
     navHostController: NavHostController,
 ) {
@@ -50,7 +49,7 @@ fun HomeScreen(
 @Composable
 private fun MyScaffold(
     appName: String,
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     result: State<ApodViewModel.Result>,
     navHostController: NavHostController,
     isToday: State<Boolean>,
@@ -123,7 +122,7 @@ private fun MyDrawerContent(
         Text(
             text = appName,
             style = MaterialTheme.typography.h5,
-            color = Color.Gray,
+            color = Color.LightGray,
         )
         Spacer(Modifier.padding(bottom = 18.dp))
         MyTextButton(text = "About", route = "about")
@@ -194,7 +193,7 @@ private fun MyTopBar(
 
 @Composable
 private fun MyContent(
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     navHostController: NavHostController,
     result: State<ApodViewModel.Result>,
 
@@ -216,23 +215,22 @@ private fun MyContent(
 }
 
 @Composable
-private fun BitmapDownloadTracker(bitmapDownloadStatus: State<BitmapDownloadStatus>) {
+private fun BitmapLoaderTracker(bitmapLoaderStatus: State<BitmapLoader.Status>) {
 
-    when (val value = bitmapDownloadStatus.value) {
-        is BitmapDownloadStatus.Loading -> {
-
+    when (val value = bitmapLoaderStatus.value) {
+        is BitmapLoader.Status.Loading -> {
             TextNotice(
                 text = "Downloading image for: ${value.url}\u2026",
             )
         }
 
-        is BitmapDownloadStatus.Failed -> {
+        is BitmapLoader.Status.Failed -> {
             TextNotice(
                 text = "Error downloading image for ${value.url}:\n${value.error}",
             )
         }
 
-        is BitmapDownloadStatus.Done -> {
+        is BitmapLoader.Status.Done -> {
             ApodImage(value.url, value.bitmap)
         }
     }
@@ -274,7 +272,7 @@ private fun ApodImage(
 
 @Composable
 private fun ApodContent(
-    bitmapLoader: IBitmapLoader,
+    bitmapLoader: BitmapLoader,
     apod: Apod,
     goToDetail: () -> Unit,
 ) {
@@ -284,12 +282,12 @@ private fun ApodContent(
 
         when (apod.mediaType) {
             "image" -> {
-                BitmapDownloadTracker(bitmapLoader.queueRequest(apod.url))
+                BitmapLoaderTracker(bitmapLoader.queueRequest(apod.url))
             }
 
             "video" -> {
                 if (apod.hasThumbnail()) {
-                    BitmapDownloadTracker(bitmapLoader.queueRequest(apod.thumbnailUrl))
+                    BitmapLoaderTracker(bitmapLoader.queueRequest(apod.thumbnailUrl))
                 } else {
                     NoThumbnailAvailableForVideoNotice()
                 }
