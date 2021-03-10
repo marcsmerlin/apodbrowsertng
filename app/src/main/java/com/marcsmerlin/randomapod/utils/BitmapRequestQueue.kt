@@ -2,7 +2,7 @@ package com.marcsmerlin.randomapod.utils
 
 import android.graphics.Bitmap
 
-interface IBitmapQueue {
+interface BitmapRequestQueue {
     fun addBitmapRequest(
         url: String,
         bitmapListener: (Bitmap) -> Unit,

@@ -1,6 +1,6 @@
 package com.marcsmerlin.randomapod.utils
 
-interface IStringQueue {
+interface StringRequestQueue {
 
     fun addStringRequest(
         url: String,

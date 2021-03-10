@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 
 class BitmapLoaderImpl(
-    private val queue: IBitmapQueue
+    private val requestQueue: BitmapRequestQueue
 ) : BitmapLoader {
 
     override fun queueRequest(url: String): State<BitmapLoader.Status> {
@@ -18,7 +18,7 @@ class BitmapLoaderImpl(
             BitmapLoader.Status.Loading(url = url)
         )
 
-        queue.addBitmapRequest(
+        requestQueue.addBitmapRequest(
             url = url,
             { bitmap ->
                 result.value =

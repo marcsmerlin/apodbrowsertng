@@ -6,10 +6,10 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import java.util.UUID
 
-class VolleyStringQueue(
+class VolleyStringRequestQueue(
     context: Context
 ) :
-    IStringQueue {
+    StringRequestQueue {
     private val queue = Volley.newRequestQueue(context)
     private val queueTag = UUID.randomUUID()
 

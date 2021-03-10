@@ -1,6 +1,6 @@
 package com.marcsmerlin.randomapod
 
-import com.marcsmerlin.randomapod.utils.IStringQueue
+import com.marcsmerlin.randomapod.utils.StringRequestQueue
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
@@ -9,7 +9,7 @@ class ApodArchive(
     endpoint: String,
     apiKey: String,
     firstDate: String,
-    private val queue: IStringQueue
+    private val requestQueue: StringRequestQueue
 ) {
     private val firstDate = LocalDate.parse(firstDate)
     private val baseUrl = "${endpoint}?api_key=$apiKey&thumbs=true"
@@ -21,7 +21,7 @@ class ApodArchive(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        queue.addStringRequest(
+        requestQueue.addStringRequest(
             baseUrl,
             { string ->
                 val apod = Apod(string)
@@ -50,7 +50,7 @@ class ApodArchive(
         errorListener: (Exception) -> Unit
     ) {
         if (hasNextDate()) {
-            queue.addStringRequest(
+            requestQueue.addStringRequest(
                 urlForDate(currentDate.plusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -71,7 +71,7 @@ class ApodArchive(
         errorListener: (Exception) -> Unit
     ) {
         if (hasPreviousDate()) {
-            queue.addStringRequest(
+            requestQueue.addStringRequest(
                 urlForDate(currentDate.minusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -90,7 +90,7 @@ class ApodArchive(
         val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, todayDate)
         val randomDate = firstDate.plusDays(Random.nextLong(until = daysSinceFirstDate))
 
-        queue.addStringRequest(
+        requestQueue.addStringRequest(
             urlForDate(randomDate),
             { string ->
                 val apod = Apod(string)
@@ -102,6 +102,6 @@ class ApodArchive(
     }
 
     fun close() {
-        queue.close()
+        requestQueue.close()
     }
 }
