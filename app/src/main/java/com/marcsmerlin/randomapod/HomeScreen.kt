@@ -219,9 +219,13 @@ private fun BitmapLoaderTracker(bitmapLoaderStatus: State<BitmapLoader.Status>) 
 
     when (val value = bitmapLoaderStatus.value) {
         is BitmapLoader.Status.Loading -> {
-            TextNotice(
-                text = "Downloading image for: ${value.url}\u2026",
-            )
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Gray)
+            ) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
         }
 
         is BitmapLoader.Status.Failed -> {
@@ -283,12 +287,15 @@ private fun ApodContent(
 
         when (apod.mediaType) {
             "image" -> {
-                BitmapLoaderTracker(bitmapLoader.queueRequest(apod.url))
+                BitmapLoaderTracker(
+                    bitmapLoader.queueRequest(apod.url)
+                )
             }
-
             "video" -> {
                 if (apod.hasThumbnail()) {
-                    BitmapLoaderTracker(bitmapLoader.queueRequest(apod.thumbnailUrl))
+                    BitmapLoaderTracker(
+                        bitmapLoader.queueRequest(apod.thumbnailUrl)
+                    )
                 } else {
                     NoThumbnailAvailableForVideoNotice()
                 }
@@ -357,7 +364,8 @@ private fun NoThumbnailAvailableForVideoNotice(
 private fun ErrorContent(
     error: Exception
 ) {
-    val text = "An error has occurred accessing the Apod archive. Click refresh to try again:\n$error"
+    val text =
+        "An error has occurred accessing the Apod archive. Click refresh to try again:\n$error"
 
     TextNotice(text = text)
 }
