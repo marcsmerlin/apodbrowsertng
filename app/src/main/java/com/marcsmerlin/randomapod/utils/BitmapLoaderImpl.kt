@@ -45,7 +45,7 @@ class BitmapLoaderImpl(
                             error = exception
                         )
 
-                    Log.e("$tag", "Error encountered downloading bitmap for: $url")
+                    Log.e("$tag", "Error downloading bitmap for $url:\n$exception")
                 },
             )
         }

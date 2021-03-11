@@ -27,6 +27,7 @@ import androidx.navigation.compose.navigate
 import com.marcsmerlin.randomapod.utils.BitmapLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 @Composable
 fun HomeScreen(
@@ -84,6 +85,7 @@ private fun MyScaffold(
                 bitmapLoader = bitmapLoader,
                 navHostController = navHostController,
                 result = result,
+                restart = goToday,
             )
         },
     )
@@ -196,6 +198,7 @@ private fun MyContent(
     bitmapLoader: BitmapLoader,
     navHostController: NavHostController,
     result: State<ApodViewModel.Result>,
+    restart: () -> Unit,
 
     ) {
     when (val value = result.value) {
@@ -208,8 +211,9 @@ private fun MyContent(
             )
 
         is ApodViewModel.Result.Error ->
-            ErrorContent(
-                error = value.error
+            ErrorAlert(
+                error = value.error,
+                restart = restart,
             )
     }
 }
@@ -361,17 +365,6 @@ private fun NoThumbnailAvailableForVideoNotice(
 }
 
 @Composable
-private fun ErrorContent(
-    error: Exception
-) {
-    val text =
-        "An error has occurred accessing the Apod archive. Click refresh to try again:\n$error"
-
-    TextNotice(text = text)
-}
-
-
-@Composable
 private fun TextNotice(text: String) {
     Box(
         modifier = Modifier
@@ -384,4 +377,32 @@ private fun TextNotice(text: String) {
             textAlign = TextAlign.Center,
         )
     }
+}
+
+@Composable
+private fun ErrorAlert(
+    error: Exception,
+    restart: () -> Unit,
+) {
+    val titleText = "Error accessing Apod archive"
+    val alertText =
+        "An error has occurred accessing the Apod archive. Click on the \"Restart\" button below to restart or press \"Quit\" to close the app.\n$error"
+    val onDismissRequest = { exitProcess(1) }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = restart) {
+                Text(text = "Restart")
+            }
+        },
+        modifier = Modifier.fillMaxSize(.85f),
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "Quit")
+            }
+        },
+        title = { Text(text = titleText) },
+        text = { Text(text = alertText) },
+    )
 }
