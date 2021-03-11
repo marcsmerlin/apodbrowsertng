@@ -1,7 +1,6 @@
 package com.marcsmerlin.randomapod.utils
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 
@@ -11,7 +10,7 @@ class BitmapLoaderImpl(
 
     private var hasCache: Boolean = false
 
-    private lateinit var cache: MutableState<BitmapLoader.Status.Done>
+    private lateinit var cache: BitmapLoader.Status.Done
 
     override fun queueRequest(url: String): State<BitmapLoader.Status> {
 
@@ -19,32 +18,25 @@ class BitmapLoaderImpl(
             BitmapLoader.Status.Loading(url = url)
         )
 
-        if (hasCache && cache.value.url == url) {
-            result.value = cache.value
+        if (hasCache && cache.url == url) {
+            result.value = cache
         }
         else {
             val tag = this::class.java
-            Log.i("$tag", "Queuing bitmap request for: $url")
+            Log.i("$tag", "Queuing bitmap download request for: $url")
 
             requestQueue.addBitmapRequest(
                 url = url,
                 { bitmap ->
-                    val value = BitmapLoader.Status.Done(
+                    cache = BitmapLoader.Status.Done(
                             url = url,
                             bitmap = bitmap
                         )
+                    hasCache = true
 
-                    Log.i("$tag", "Bitmap received for: $url")
+                    Log.i("$tag", "Bitmap downloaded for: $url")
 
-                    result.value = value
-
-                    if (hasCache) {
-                        cache.value = value
-                    }
-                    else {
-                        cache = mutableStateOf(value)
-                        hasCache = true
-                    }
+                    result.value = cache
                 },
                 { exception ->
                     result.value =
@@ -52,6 +44,8 @@ class BitmapLoaderImpl(
                             url = url,
                             error = exception
                         )
+
+                    Log.e("$tag", "Error encountered downloading bitmap for: $url")
                 },
             )
         }

@@ -77,7 +77,7 @@ private fun InitializationFailureAlert(
         text = {
             Text( text =
             "An error has occurred during app initialization. " + "" +
-                    "Click the \"Confirm\" button to quit the app.\n" + error)
+                    "Click the \"Confirm\" button to close the app.\n" + error)
         }
     )
 }
