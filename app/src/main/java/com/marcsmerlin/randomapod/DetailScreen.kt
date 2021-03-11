@@ -35,7 +35,6 @@ fun DetailScreen(
         })
 }
 
-
 @Composable
 private fun ApodDetail(
     apod: Apod,

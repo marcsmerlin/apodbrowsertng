@@ -99,7 +99,7 @@ private fun MyDrawerContent(
     coroutineScope: CoroutineScope,
 ) {
     @Composable
-    fun MyTextButton(
+    fun MyMenuButton(
         text: String,
         route: String,
     ) {
@@ -127,8 +127,8 @@ private fun MyDrawerContent(
             color = Color.LightGray,
         )
         Spacer(Modifier.padding(bottom = 18.dp))
-        MyTextButton(text = "About", route = "about")
-        MyTextButton(text = "Credits", route = "credits")
+        MyMenuButton(text = "About", route = "about")
+        MyMenuButton(text = "Credits", route = "credits")
     }
 }
 
@@ -215,8 +215,7 @@ private fun MyContent(
 
         is ApodViewModel.Result.Error -> {
             val alertTitle = "Error accessing Apod archive"
-            val alertText =
-                "Click on the \"Restart\" button below to restart or press \"Quit\" to close the app."
+            val alertText = "Click on the \"Restart\" button below to restart or press \"Quit\" to close the app."
 
             ErrorAlert(
                 title = alertTitle,
@@ -371,8 +370,7 @@ private fun ApodContent(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    val text =
-        "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
+    val text = "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
@@ -380,8 +378,7 @@ private fun UnsupportedMediaTypeNotice(
 @Composable
 private fun NoThumbnailAvailableForVideoNotice(
 ) {
-    val text =
-        "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
+    val text = "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
@@ -410,7 +407,11 @@ private fun ErrorAlert(
 ) {
     val onDismissRequest = { exitProcess(1) }
 
-    Box (modifier = Modifier.fillMaxSize()){
+    Box (modifier = Modifier
+        .fillMaxSize()
+        .padding(start = 18.dp, end = 18.dp),
+        contentAlignment = Alignment.Center
+    ){
         AlertDialog(
             onDismissRequest = onDismissRequest,
             confirmButton = {
@@ -419,8 +420,7 @@ private fun ErrorAlert(
                 }
             },
             modifier = Modifier
-                .matchParentSize()
-                .align(Alignment.Center),
+                .matchParentSize(),
             dismissButton = {
                 TextButton(onClick = onDismissRequest) {
                     Text(text = "Quit")

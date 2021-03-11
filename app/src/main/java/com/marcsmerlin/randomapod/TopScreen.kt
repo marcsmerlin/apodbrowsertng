@@ -58,6 +58,9 @@ private fun InitializationFailureAlert(
     error: Exception
 ) {
     val dismissAction = { exitProcess(1) }
+    val alertTitle = "Initialization has failed for $appName"
+    val alertText = "An error has occurred during app initialization. " + "" +
+            "Click the \"Confirm\" button to close the app.\n" + error
 
     AlertDialog(
         onDismissRequest = dismissAction,
@@ -71,13 +74,11 @@ private fun InitializationFailureAlert(
         modifier = Modifier.fillMaxSize(),
         title = {
             Text(
-                text = "Initialization has failed for $appName"
+                text = alertTitle
             )
         },
         text = {
-            Text( text =
-            "An error has occurred during app initialization. " + "" +
-                    "Click the \"Confirm\" button to close the app.\n" + error)
+            Text( text = alertText)
         }
     )
 }
