@@ -22,7 +22,6 @@ class VolleyStringRequestQueue(
         val logTag = this::class.java
         Log.i("$logTag", "Queuing string request for: $url")
 
-
         val request = StringRequest(
             Request.Method.GET,
             url,

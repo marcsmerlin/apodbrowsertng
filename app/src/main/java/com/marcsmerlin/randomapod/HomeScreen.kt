@@ -201,25 +201,38 @@ private fun MyContent(
     restart: () -> Unit,
 
     ) {
+
     when (val value = result.value) {
 
-        is ApodViewModel.Result.Data ->
+        is ApodViewModel.Result.Data -> {
             ApodContent(
                 bitmapLoader = bitmapLoader,
                 apod = value.apod,
                 goToDetail = { navHostController.navigate(route = "detail") },
+                restart = restart
             )
+        }
 
-        is ApodViewModel.Result.Error ->
+        is ApodViewModel.Result.Error -> {
+            val alertTitle = "Error accessing Apod archive"
+            val alertText =
+                "Click on the \"Restart\" button below to restart or press \"Quit\" to close the app."
+
             ErrorAlert(
+                title = alertTitle,
+                text = alertText,
                 error = value.error,
                 restart = restart,
             )
+        }
     }
 }
 
 @Composable
-private fun BitmapLoaderTracker(bitmapLoaderStatus: State<BitmapLoader.Status>) {
+private fun BitmapLoaderTracker(
+    bitmapLoaderStatus: State<BitmapLoader.Status>,
+    restart: () -> Unit,
+) {
 
     when (val value = bitmapLoaderStatus.value) {
         is BitmapLoader.Status.Loading -> {
@@ -233,8 +246,14 @@ private fun BitmapLoaderTracker(bitmapLoaderStatus: State<BitmapLoader.Status>) 
         }
 
         is BitmapLoader.Status.Failed -> {
-            TextNotice(
-                text = "Error downloading image for ${value.url}:\n${value.error}",
+            val alertTitle = "Error downloading image"
+            val alertText = "Error downloading image for ${value.url}:\n"
+
+            ErrorAlert(
+                title = alertTitle,
+                text = alertText,
+                error = value.error,
+                restart = restart,
             )
         }
 
@@ -284,6 +303,7 @@ private fun ApodContent(
     bitmapLoader: BitmapLoader,
     apod: Apod,
     goToDetail: () -> Unit,
+    restart: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -292,13 +312,15 @@ private fun ApodContent(
         when (apod.mediaType) {
             "image" -> {
                 BitmapLoaderTracker(
-                    bitmapLoader.queueRequest(apod.url)
+                    bitmapLoaderStatus = bitmapLoader.queueRequest(apod.url),
+                    restart = restart,
                 )
             }
             "video" -> {
                 if (apod.hasThumbnail()) {
                     BitmapLoaderTracker(
-                        bitmapLoader.queueRequest(apod.thumbnailUrl)
+                        bitmapLoaderStatus = bitmapLoader.queueRequest(apod.thumbnailUrl),
+                        restart = restart
                     )
                 } else {
                     NoThumbnailAvailableForVideoNotice()
@@ -381,28 +403,31 @@ private fun TextNotice(text: String) {
 
 @Composable
 private fun ErrorAlert(
+    title: String,
+    text: String,
     error: Exception,
     restart: () -> Unit,
 ) {
-    val titleText = "Error accessing Apod archive"
-    val alertText =
-        "An error has occurred accessing the Apod archive. Click on the \"Restart\" button below to restart or press \"Quit\" to close the app.\n$error"
     val onDismissRequest = { exitProcess(1) }
 
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(onClick = restart) {
-                Text(text = "Restart")
-            }
-        },
-        modifier = Modifier.fillMaxSize(.85f),
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(text = "Quit")
-            }
-        },
-        title = { Text(text = titleText) },
-        text = { Text(text = alertText) },
-    )
+    Box (modifier = Modifier.fillMaxSize()){
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            confirmButton = {
+                TextButton(onClick = restart) {
+                    Text(text = "Restart")
+                }
+            },
+            modifier = Modifier
+                .matchParentSize()
+                .align(Alignment.Center),
+            dismissButton = {
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = "Quit")
+                }
+            },
+            title = { Text(text = title) },
+            text = { Text(text = "$text\n$error") },
+        )
+    }
 }
