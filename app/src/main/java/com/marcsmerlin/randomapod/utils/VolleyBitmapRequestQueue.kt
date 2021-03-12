@@ -5,16 +5,15 @@ import android.graphics.Bitmap
 import android.widget.ImageView
 import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.Volley
-import java.util.UUID
 
 class VolleyBitmapRequestQueue(
     context: Context
 ) :
     BitmapRequestQueue {
     private val queue = Volley.newRequestQueue(context)
-    private val queueTag = UUID.randomUUID()
+    private val tag = this::class.java
 
-    override fun addBitmapRequest(
+    override fun queueRequest(
         url: String,
         bitmapListener: (Bitmap) -> Unit,
         errorListener: (Exception) -> Unit,
@@ -30,11 +29,11 @@ class VolleyBitmapRequestQueue(
             Bitmap.Config.HARDWARE,
             errorListener,
         )
-        request.tag = queueTag
+        request.tag = tag
         queue.add(request)
     }
 
     override fun close() {
-        queue.cancelAll(queueTag)
+        queue.cancelAll(tag)
     }
 }

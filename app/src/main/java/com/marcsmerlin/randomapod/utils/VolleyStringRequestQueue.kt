@@ -13,7 +13,7 @@ class VolleyStringRequestQueue(
     private val queue = Volley.newRequestQueue(context)
     private val tag = this::class.java
 
-    override fun addStringRequest(
+    override fun queueRequest(
         url: String,
         stringListener: (String) -> Unit,
         errorListener: (Exception) -> Unit,

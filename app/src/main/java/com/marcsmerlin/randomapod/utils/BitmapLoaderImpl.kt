@@ -23,7 +23,7 @@ class BitmapLoaderImpl(
         } else {
             Log.d("$tag", "Queuing bitmap download request for $url")
 
-            requestQueue.addBitmapRequest(
+            requestQueue.queueRequest(
                 url = url,
                 { bitmap ->
                     cache = BitmapLoader.Status.Done(

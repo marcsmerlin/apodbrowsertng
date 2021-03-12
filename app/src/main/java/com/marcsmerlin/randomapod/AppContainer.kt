@@ -15,7 +15,7 @@ class AppContainer(
         val archive: ApodArchive by lazy {
             val context = applicationContext
             ApodArchive(
-                requestQueue = VolleyStringRequestQueue(context),
+                queue = VolleyStringRequestQueue(context),
                 endpoint = context.getString(R.string.apod_api_endpoint),
                 apiKey = context.getString(R.string.apod_api_key),
                 firstDate = context.getString(R.string.apod_api_first_date),

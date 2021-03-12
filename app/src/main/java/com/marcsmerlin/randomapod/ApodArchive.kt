@@ -9,7 +9,7 @@ class ApodArchive(
     endpoint: String,
     apiKey: String,
     firstDate: String,
-    private val requestQueue: StringRequestQueue
+    private val queue: StringRequestQueue
 ) {
     private val firstDate = LocalDate.parse(firstDate)
     private val baseUrl = "${endpoint}?api_key=$apiKey&thumbs=true"
@@ -21,7 +21,7 @@ class ApodArchive(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        requestQueue.addStringRequest(
+        queue.queueRequest(
             baseUrl,
             { string ->
                 val apod = Apod(string)
@@ -50,7 +50,7 @@ class ApodArchive(
         errorListener: (Exception) -> Unit
     ) {
         if (hasNextDate()) {
-            requestQueue.addStringRequest(
+            queue.queueRequest(
                 urlForDate(currentDate.plusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -71,7 +71,7 @@ class ApodArchive(
         errorListener: (Exception) -> Unit
     ) {
         if (hasPreviousDate()) {
-            requestQueue.addStringRequest(
+            queue.queueRequest(
                 urlForDate(currentDate.minusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -90,7 +90,7 @@ class ApodArchive(
         val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, todayDate)
         val randomDate = firstDate.plusDays(Random.nextLong(until = daysSinceFirstDate))
 
-        requestQueue.addStringRequest(
+        queue.queueRequest(
             urlForDate(randomDate),
             { string ->
                 val apod = Apod(string)
@@ -102,6 +102,6 @@ class ApodArchive(
     }
 
     fun close() {
-        requestQueue.close()
+        queue.close()
     }
 }

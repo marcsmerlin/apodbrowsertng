@@ -2,7 +2,7 @@ package com.marcsmerlin.randomapod.utils
 
 interface StringRequestQueue {
 
-    fun addStringRequest(
+    fun queueRequest(
         url: String,
         stringListener: (String) -> Unit,
         errorListener: (Exception) -> Unit,
