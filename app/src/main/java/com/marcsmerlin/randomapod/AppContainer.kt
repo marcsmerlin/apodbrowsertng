@@ -1,38 +1,33 @@
 package com.marcsmerlin.randomapod
 
 import android.content.Context
+import com.marcsmerlin.randomapod.utils.BitmapLoaderImpl
 import com.marcsmerlin.randomapod.utils.BitmapLoader
-import com.marcsmerlin.randomapod.utils.IBitmapLoader
-import com.marcsmerlin.randomapod.utils.VolleyBitmapQueue
-import com.marcsmerlin.randomapod.utils.VolleyStringQueue
+import com.marcsmerlin.randomapod.utils.VolleyBitmapRequestQueue
+import com.marcsmerlin.randomapod.utils.VolleyStringRequestQueue
 
-interface AppContainer {
-    val viewModelFactory: ApodViewModelFactory
-    val bitmapLoader: IBitmapLoader
-}
-
-class AppContainerImpl(
+class AppContainer(
     private val applicationContext: Context
-) : AppContainer {
-
-    override val viewModelFactory: ApodViewModelFactory
+) {
+    val viewModelFactory: ApodViewModelImpl.Factory
 
     init {
-        val apodRepository: ApodRepository by lazy {
-            ApodRepository(
-                queue = VolleyStringQueue(context = applicationContext),
-                endpoint = "https://api.nasa.gov/planetary/apod",
-                apiKey = "Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE",
-                firstDate = "1995-06-16",
+        val archive: ApodArchive by lazy {
+            val context = applicationContext
+            ApodArchive(
+                requestQueue = VolleyStringRequestQueue(context),
+                endpoint = context.getString(R.string.apod_api_endpoint),
+                apiKey = context.getString(R.string.apod_api_key),
+                firstDate = context.getString(R.string.apod_api_first_date),
             )
         }
 
-        viewModelFactory = ApodViewModelFactory(apodRepository)
+        viewModelFactory = ApodViewModelImpl.Factory(archive)
     }
 
-    override val bitmapLoader: IBitmapLoader by lazy {
-        BitmapLoader(
-            queue = VolleyBitmapQueue(
+    val bitmapLoader: BitmapLoader by lazy {
+        BitmapLoaderImpl(
+            requestQueue = VolleyBitmapRequestQueue(
                 context = applicationContext
             )
         )

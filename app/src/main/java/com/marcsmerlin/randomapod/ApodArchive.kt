@@ -1,45 +1,44 @@
 package com.marcsmerlin.randomapod
 
-import com.marcsmerlin.randomapod.utils.IStringQueue
+import com.marcsmerlin.randomapod.utils.StringRequestQueue
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
 
-class ApodRepository(
+class ApodArchive(
     endpoint: String,
     apiKey: String,
     firstDate: String,
-    private val queue: IStringQueue
+    private val requestQueue: StringRequestQueue
 ) {
-
     private val firstDate = LocalDate.parse(firstDate)
-    private val baseUrl = "${endpoint}?api_key=$apiKey"
+    private val baseUrl = "${endpoint}?api_key=$apiKey&thumbs=true"
 
-    private lateinit var homeDate: LocalDate
+    private lateinit var todayDate: LocalDate
     private lateinit var currentDate: LocalDate
 
-    fun queueHomeRequest(
+    fun queueTodayRequest(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        queue.addStringRequest(
+        requestQueue.addStringRequest(
             baseUrl,
             { string ->
                 val apod = Apod(string)
                 currentDate = apod.localDate
-                homeDate = currentDate
+                todayDate = currentDate
                 apodListener(apod)
             },
             errorListener,
         )
     }
 
-    fun isHome(): Boolean {
-        return currentDate.isEqual(homeDate)
+    fun isToday(): Boolean {
+        return currentDate.isEqual(todayDate)
     }
 
     fun hasNextDate(): Boolean {
-        return currentDate.isBefore(homeDate)
+        return currentDate.isBefore(todayDate)
     }
 
     private fun urlForDate(date: LocalDate): String {
@@ -51,7 +50,7 @@ class ApodRepository(
         errorListener: (Exception) -> Unit
     ) {
         if (hasNextDate()) {
-            queue.addStringRequest(
+            requestQueue.addStringRequest(
                 urlForDate(currentDate.plusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -72,7 +71,7 @@ class ApodRepository(
         errorListener: (Exception) -> Unit
     ) {
         if (hasPreviousDate()) {
-            queue.addStringRequest(
+            requestQueue.addStringRequest(
                 urlForDate(currentDate.minusDays(1L)),
                 { string ->
                     val apod = Apod(string)
@@ -88,10 +87,10 @@ class ApodRepository(
         apodListener: (Apod) -> Unit,
         errorListener: (Exception) -> Unit
     ) {
-        val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, homeDate)
+        val daysSinceFirstDate = ChronoUnit.DAYS.between(firstDate, todayDate)
         val randomDate = firstDate.plusDays(Random.nextLong(until = daysSinceFirstDate))
 
-        queue.addStringRequest(
+        requestQueue.addStringRequest(
             urlForDate(randomDate),
             { string ->
                 val apod = Apod(string)
@@ -103,6 +102,6 @@ class ApodRepository(
     }
 
     fun close() {
-        queue.close()
+        requestQueue.close()
     }
 }

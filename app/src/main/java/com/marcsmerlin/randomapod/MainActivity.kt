@@ -3,8 +3,10 @@ package com.marcsmerlin.randomapod
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import com.marcsmerlin.randomapod.ui.theme.ApodBrowserTheme
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ApodViewModel
@@ -12,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appContainer = (application as ApodApplication).container
+        val appContainer: AppContainer = (application as ApodApplication).container
 
         viewModel = ViewModelProvider(
             this,
@@ -21,7 +23,8 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             ApodBrowserTheme {
-                ApodUI(
+                TopScreen(
+                    appName = stringResource(id = R.string.app_name),
                     bitmapLoader = appContainer.bitmapLoader,
                     viewModel = viewModel,
                 )

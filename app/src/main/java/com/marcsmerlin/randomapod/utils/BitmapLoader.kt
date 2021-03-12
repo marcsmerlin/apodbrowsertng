@@ -1,33 +1,17 @@
 package com.marcsmerlin.randomapod.utils
 
-import android.util.Log
+import android.graphics.Bitmap
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 
-class BitmapLoader(
-    private val queue: IBitmapQueue
-) : IBitmapLoader {
 
-    override fun queueRequest(url: String): State<BitmapStatus> {
+interface BitmapLoader {
 
-        val tag = this::class.java
+    sealed class Status(val url: String) {
 
-        Log.i("$tag", "Bitmap request queued for: $url")
-
-        val result = mutableStateOf<BitmapStatus>(BitmapStatus.Loading)
-
-        queue.addBitmapRequest(
-            url = url,
-            { bitmap ->
-                result.value = BitmapStatus.Success(bitmap)
-
-                Log.i("$tag", "Bitmap received for: $url")
-            },
-            { exception ->
-                result.value = BitmapStatus.Error(exception)
-            },
-        )
-
-        return result
+        class Loading(url: String) : Status(url)
+        class Failed(url: String, val error: Exception) : Status(url)
+        class Done(url:String, val bitmap: Bitmap) : Status(url)
     }
+
+    fun queueRequest(url: String): State<Status>
 }

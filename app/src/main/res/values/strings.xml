@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Random Apod</string>
     <string name="app_title">Random Apod</string>
+    <string name="credits_text">The Random Apod app was created by Marc Merlin as an exercise to learn the Kotlin programming language and the Android Development environment, in particular the newly introduced Jetpack Compose user interface framework. It is offered for use free of charge as a tribute to NASA\'s Astronomy Picture of the Day (Apod) website.\n\nThe source code for the app, intended to be suitable for educational purposes, is available under a GNU General Public License v3.0 from Marc\'s GitHub repository.</string>
+    <string name="about_text">Except for brief interruptions due to federal government shutdowns, NASA has been bringing a featured Astronomy Picture of the Day (Apod) to the public each and every day since June 16, 1995.\n\nThis app accesses an archive of these pictures provided courtesy of NASA. (Thanks, NASA!)\n\nPlease visit the NASA Astronomy Picture of the Day website to enjoy a daily dose of fascinating astronomy images.</string>
+    <string name="about_title">About NASA\'s Astronomy Picture of the Day</string>
+    <string name="credits_title">Credits for the Random Apod app</string>
+    <string name="apod_api_endpoint">https://api.nasa.gov/planetary/apod</string>
+    <string name="apod_api_key">Z3k4WvkWdkXOUg9VOdlNGv3cJeGauZ2omfJkGtNE</string>
+    <string name="apod_api_first_date">1995-06-16</string>
 </resources>

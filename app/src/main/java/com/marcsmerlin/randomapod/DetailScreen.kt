@@ -1,12 +1,12 @@
 package com.marcsmerlin.randomapod
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -15,25 +15,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DetailScreen(
     viewModel: ApodViewModel,
-    goBack: () -> Unit,
+    topBar: @Composable () -> Unit,
 ) {
-    val appName = stringResource(id = R.string.app_name)
     val scaffoldState = rememberScaffoldState()
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = appName) },
-                navigationIcon = {
-                    IconButton(onClick = { goBack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Go back"
-                        )
-                    }
-                })
-        },
+        topBar = topBar,
         content = {
             when (val result = viewModel.result.value) {
 
@@ -46,7 +34,6 @@ fun DetailScreen(
             }
         })
 }
-
 
 @Composable
 private fun ApodDetail(

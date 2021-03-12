@@ -8,6 +8,6 @@ class ApodApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        container = AppContainerImpl(this)
+        container = AppContainer(this)
     }
 }

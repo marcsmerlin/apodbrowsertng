@@ -5,9 +5,11 @@ import androidx.compose.runtime.State
 interface ApodViewModel {
     val status: State<Status>
     val result: State<Result>
+    val isToday: State<Boolean>
 
     sealed class Status {
         object Initializing : Status()
+        data class InitializationFailure(val error: Exception) : Status()
         object Operational : Status()
     }
 
@@ -16,14 +18,7 @@ interface ApodViewModel {
         data class Error(val error: Exception): Result()
     }
 
-    fun isHome(): Boolean
-    fun goHome()
-
-    fun hasNext(): Boolean
-    fun getNext()
-
-    fun hasPrevious(): Boolean
-    fun getPrevious()
+    fun goToday()
 
     fun getRandom()
 

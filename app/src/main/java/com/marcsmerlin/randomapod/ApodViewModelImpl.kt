@@ -1,6 +1,5 @@
 package com.marcsmerlin.randomapod
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class ApodViewModelImpl(
-    private val repository: ApodRepository
+    private val archive: ApodArchive
 ) : ViewModel(), ApodViewModel {
 
     private val _status = mutableStateOf<ApodViewModel.Status>(
@@ -23,8 +22,14 @@ class ApodViewModelImpl(
     override val result: State<ApodViewModel.Result>
         get() = _result
 
+    private lateinit var _isToday: MutableState<Boolean>
+
+    override val isToday: State<Boolean>
+        get() = _isToday
+
     private fun apodListener(apod: Apod) {
         _result.value = ApodViewModel.Result.Data(apod)
+        _isToday.value = archive.isToday()
     }
 
     private fun errorListener(error: Exception) {
@@ -32,49 +37,28 @@ class ApodViewModelImpl(
     }
 
     init {
-        repository.queueHomeRequest(
+        archive.queueTodayRequest(
             { apod: Apod ->
                 _status.value = ApodViewModel.Status.Operational
                 _result = mutableStateOf(ApodViewModel.Result.Data(apod))
+                _isToday = mutableStateOf(true)
             },
 
             { error: Exception ->
-                _status.value = ApodViewModel.Status.Operational
-                _result = mutableStateOf(ApodViewModel.Result.Error(error))
+                _status.value = ApodViewModel.Status.InitializationFailure(error)
             },
         )
     }
 
-    override fun isHome(): Boolean = repository.isHome()
-
-    override fun goHome() {
-        repository.queueHomeRequest(
-            ::apodListener,
-            ::errorListener,
-        )
-    }
-
-    override fun hasNext(): Boolean = repository.hasNextDate()
-
-    override fun getNext() {
-        repository.queueRequestForNextDate(
-            ::apodListener,
-            ::errorListener,
-        )
-    }
-
-    override fun hasPrevious(): Boolean = repository.hasPreviousDate()
-
-    override fun getPrevious() {
-        repository.queueRequestForPreviousDate(
+    override fun goToday() {
+        archive.queueTodayRequest(
             ::apodListener,
             ::errorListener,
         )
     }
 
     override fun getRandom() {
-        Log.i("ApodViewModel", "getRandom() called.")
-        repository.queueRequestForRandomDate(
+        archive.queueRequestForRandomDate(
             ::apodListener,
             ::errorListener,
         )
@@ -82,20 +66,20 @@ class ApodViewModelImpl(
 
     override fun onCleared() {
         super.onCleared()
-        repository.close()
+        archive.close()
     }
-}
 
-class ApodViewModelFactory(
-    private val repository: ApodRepository
-) :
-    ViewModelProvider.Factory {
+    class Factory(
+        private val archive: ApodArchive
+    ) :
+        ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ApodViewModelImpl::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ApodViewModelImpl(repository = repository) as T
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(ApodViewModelImpl::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return ApodViewModelImpl(archive = archive) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

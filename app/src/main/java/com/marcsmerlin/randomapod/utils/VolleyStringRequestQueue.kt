@@ -1,15 +1,16 @@
 package com.marcsmerlin.randomapod.utils
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import java.util.UUID
 
-class VolleyStringQueue(
+class VolleyStringRequestQueue(
     context: Context
 ) :
-    IStringQueue {
+    StringRequestQueue {
     private val queue = Volley.newRequestQueue(context)
     private val queueTag = UUID.randomUUID()
 
@@ -18,11 +19,17 @@ class VolleyStringQueue(
         stringListener: (String) -> Unit,
         errorListener: (Exception) -> Unit,
     ) {
+        val logTag = this::class.java
+        Log.i("$logTag", "Queuing string request for: $url")
+
         val request = StringRequest(
             Request.Method.GET,
             url,
             { string -> stringListener(string) },
-            { exception -> errorListener(exception) },
+            { exception ->
+                Log.e("$logTag", "Error downloading string for $url:\n$exception")
+                errorListener(exception)
+            },
         )
         request.tag = queueTag
         queue.add(request)

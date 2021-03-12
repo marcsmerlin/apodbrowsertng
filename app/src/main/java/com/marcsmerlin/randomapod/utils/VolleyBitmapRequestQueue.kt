@@ -7,10 +7,10 @@ import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.Volley
 import java.util.UUID
 
-class VolleyBitmapQueue(
+class VolleyBitmapRequestQueue(
     context: Context
 ) :
-    IBitmapQueue {
+    BitmapRequestQueue {
     private val queue = Volley.newRequestQueue(context)
     private val queueTag = UUID.randomUUID()
 
