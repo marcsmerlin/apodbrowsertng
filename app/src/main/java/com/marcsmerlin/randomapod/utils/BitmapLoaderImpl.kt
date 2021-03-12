@@ -8,8 +8,8 @@ class BitmapLoaderImpl(
     private val requestQueue: BitmapRequestQueue
 ) : BitmapLoader {
 
+    private val tag = this::class.java
     private var hasCache: Boolean = false
-
     private lateinit var cache: BitmapLoader.Status.Done
 
     override fun queueRequest(url: String): State<BitmapLoader.Status> {
@@ -20,21 +20,19 @@ class BitmapLoaderImpl(
 
         if (hasCache && cache.url == url) {
             result.value = cache
-        }
-        else {
-            val tag = this::class.java
-            Log.i("$tag", "Queuing bitmap download request for: $url")
+        } else {
+            Log.d("$tag", "Queuing bitmap download request for $url")
 
             requestQueue.addBitmapRequest(
                 url = url,
                 { bitmap ->
                     cache = BitmapLoader.Status.Done(
-                            url = url,
-                            bitmap = bitmap
-                        )
+                        url = url,
+                        bitmap = bitmap
+                    )
                     hasCache = true
 
-                    Log.i("$tag", "Bitmap downloaded for: $url")
+                    Log.d("$tag", "Bitmap downloaded for: $url")
 
                     result.value = cache
                 },
