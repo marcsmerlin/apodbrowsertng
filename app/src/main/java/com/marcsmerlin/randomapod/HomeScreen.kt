@@ -32,13 +32,11 @@ import kotlin.system.exitProcess
 @Composable
 fun HomeScreen(
     appName: String,
-    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
     navHostController: NavHostController,
 ) {
     MyScaffold(
         appName = appName,
-        bitmapLoader = bitmapLoader,
         navHostController = navHostController,
         result = viewModel.result,
         isToday = viewModel.isToday,
@@ -50,7 +48,6 @@ fun HomeScreen(
 @Composable
 private fun MyScaffold(
     appName: String,
-    bitmapLoader: BitmapLoader,
     result: State<ApodViewModel.Result>,
     navHostController: NavHostController,
     isToday: State<Boolean>,
@@ -82,7 +79,6 @@ private fun MyScaffold(
         },
         content = {
             MyContent(
-                bitmapLoader = bitmapLoader,
                 navHostController = navHostController,
                 result = result,
                 restart = goToday,
@@ -195,7 +191,6 @@ private fun MyTopBar(
 
 @Composable
 private fun MyContent(
-    bitmapLoader: BitmapLoader,
     navHostController: NavHostController,
     result: State<ApodViewModel.Result>,
     restart: () -> Unit,
@@ -206,7 +201,6 @@ private fun MyContent(
 
         is ApodViewModel.Result.Data -> {
             ApodContent(
-                bitmapLoader = bitmapLoader,
                 apod = value.apod,
                 goToDetail = { navHostController.navigate(route = "detail") },
                 restart = restart
@@ -299,11 +293,12 @@ private fun ApodImage(
 
 @Composable
 private fun ApodContent(
-    bitmapLoader: BitmapLoader,
     apod: Apod,
     goToDetail: () -> Unit,
     restart: () -> Unit
 ) {
+    val bitmapLoader = LocalBitmapLoader.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {

@@ -11,13 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.marcsmerlin.randomapod.utils.BitmapLoader
 import kotlin.system.exitProcess
 
 @Composable
 fun TopScreen(
     appName: String,
-    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
 ) {
     when (val value = viewModel.status.value) {
@@ -33,9 +31,8 @@ fun TopScreen(
 
         ApodViewModel.Status.Operational ->
             OperationalScreen(
-                appName,
-                bitmapLoader,
-                viewModel,
+                appName = appName,
+                viewModel = viewModel,
             )
     }
 }
@@ -86,7 +83,6 @@ private fun InitializationFailureAlert(
 @Composable
 private fun OperationalScreen(
     appName: String,
-    bitmapLoader: BitmapLoader,
     viewModel: ApodViewModel,
 ) {
     val navHostController = rememberNavController()
@@ -112,7 +108,6 @@ private fun OperationalScreen(
         composable(route = "home") {
             HomeScreen(
                 appName = appName,
-                bitmapLoader = bitmapLoader,
                 viewModel = viewModel,
                 navHostController = navHostController,
             )
