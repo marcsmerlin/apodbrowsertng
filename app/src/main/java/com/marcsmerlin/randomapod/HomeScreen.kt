@@ -174,12 +174,26 @@ private fun MyTopBar(
                 onClick = getRandom
             )
 
-            MyActionButton(
-                imageVector = Icons.Filled.Home,
-                contentDescription = "Go to today's APOD",
+            IconButton(
                 onClick = goToday,
-                enabled = !isToday.value
-            )
+                enabled = !isToday.value,
+            ) {
+                val imageVector = Icons.Filled.Home
+                val contentDescription = "Return to today's Apod"
+
+                if (!isToday.value) {
+                    Icon(
+                        imageVector = imageVector,
+                        contentDescription = contentDescription,
+                    )
+                } else {
+                    Icon(
+                        imageVector = imageVector,
+                        contentDescription = contentDescription,
+                        tint = Color.DarkGray
+                    )
+                }
+            }
         })
 }
 
