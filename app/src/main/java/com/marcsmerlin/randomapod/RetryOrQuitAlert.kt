@@ -13,9 +13,9 @@ fun RetryOrQuitAlert(
     error: Exception,
     alertCause: String,
     modifier: Modifier = Modifier,
-    onDismissRequest: () -> Unit = { exitProcess(1) },
-    onRetryRequest: () -> Unit = {},
+    onRetryRequest: () -> Unit,
 ) {
+    val onDismissRequest = { exitProcess(1) }
     val advisoryText = "Click Quit to close the app or Retry to try again."
 
     AlertDialog(
@@ -46,5 +46,6 @@ fun PreviewRetryOrQuitDialog() {
     RetryOrQuitAlert(
         alertCause = "An error has occurred accessing the Apod Archive.",
         error = IllegalArgumentException(),
+        onRetryRequest = {}
     )
 }

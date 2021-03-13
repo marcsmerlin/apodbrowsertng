@@ -72,7 +72,7 @@ private fun MyScaffold(
             MyContent(
                 navHostController = navHostController,
                 result = result,
-                restart = goToday,
+                onRetryRequest = goToday,
             )
         },
     )
@@ -184,7 +184,7 @@ private fun MyTopBar(
 private fun MyContent(
     navHostController: NavHostController,
     result: State<ApodViewModel.Result>,
-    restart: () -> Unit,
+    onRetryRequest: () -> Unit,
 
     ) {
 
@@ -194,7 +194,7 @@ private fun MyContent(
             ApodContent(
                 apod = value.apod,
                 goToDetail = { navHostController.navigate(route = "detail") },
-                restart = restart
+                retry = onRetryRequest
             )
         }
 
@@ -204,7 +204,7 @@ private fun MyContent(
             RetryOrQuitAlert(
                 error = value.error,
                 alertCause = alertCause,
-                onRetryRequest = restart,
+                onRetryRequest = onRetryRequest,
             )
         }
     }

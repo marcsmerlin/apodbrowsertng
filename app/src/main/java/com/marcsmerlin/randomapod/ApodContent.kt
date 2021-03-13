@@ -31,7 +31,7 @@ import com.marcsmerlin.randomapod.utils.BitmapLoader
 fun ApodContent(
     apod: Apod,
     goToDetail: () -> Unit,
-    restart: () -> Unit
+    retry: () -> Unit
 ) {
     val bitmapLoader = LocalBitmapLoader.current
 
@@ -43,14 +43,14 @@ fun ApodContent(
             "image" -> {
                 ApodBitmapDownloadTracker(
                     bitmapLoaderStatus = bitmapLoader.queueRequest(apod.url),
-                    restart = restart,
+                    retry = retry,
                 )
             }
             "video" -> {
                 if (apod.hasThumbnail()) {
                     ApodBitmapDownloadTracker(
                         bitmapLoaderStatus = bitmapLoader.queueRequest(apod.thumbnailUrl),
-                        restart = restart
+                        retry = retry
                     )
                 } else {
                     NoThumbnailAvailableForVideoNotice()
@@ -99,7 +99,7 @@ fun ApodContent(
 @Composable
 private fun ApodBitmapDownloadTracker(
     bitmapLoaderStatus: State<BitmapLoader.Status>,
-    restart: () -> Unit,
+    retry: () -> Unit,
 ) {
     BitmapDownloadTracker(
         bitmapLoaderStatus = bitmapLoaderStatus,
@@ -120,7 +120,7 @@ private fun ApodBitmapDownloadTracker(
             RetryOrQuitAlert(
                 error = error,
                 alertCause = alertCause,
-                onRetryRequest = restart,
+                onRetryRequest = retry,
             )
         },
 
