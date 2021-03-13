@@ -8,9 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,6 +17,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
+
+internal val LocalOnRetryRequest = staticCompositionLocalOf<() -> Unit> { exitProcess(1) }
 
 @Composable
 fun HomeScreen(
@@ -26,14 +27,17 @@ fun HomeScreen(
     viewModel: ApodViewModel,
     navHostController: NavHostController,
 ) {
-    MyScaffold(
-        appName = appName,
-        navHostController = navHostController,
-        result = viewModel.result,
-        isToday = viewModel.isToday,
-        goToday = viewModel::goToday,
-        getRandom = viewModel::getRandom,
-    )
+    CompositionLocalProvider(LocalOnRetryRequest provides viewModel::getRandom) {
+
+        MyScaffold(
+            appName = appName,
+            navHostController = navHostController,
+            result = viewModel.result,
+            isToday = viewModel.isToday,
+            goToday = viewModel::goToday,
+            getRandom = viewModel::getRandom,
+        )
+    }
 }
 
 @Composable
@@ -72,7 +76,6 @@ private fun MyScaffold(
             MyContent(
                 navHostController = navHostController,
                 result = result,
-                onRetryRequest = goToday,
             )
         },
     )
@@ -184,9 +187,7 @@ private fun MyTopBar(
 private fun MyContent(
     navHostController: NavHostController,
     result: State<ApodViewModel.Result>,
-    onRetryRequest: () -> Unit,
-
-    ) {
+) {
 
     when (val value = result.value) {
 
@@ -194,17 +195,14 @@ private fun MyContent(
             ApodContent(
                 apod = value.apod,
                 goToDetail = { navHostController.navigate(route = "detail") },
-                retry = onRetryRequest
             )
         }
 
         is ApodViewModel.Result.Error -> {
             val alertCause = "Error accessing Apod archive"
-
             RetryOrQuitAlert(
                 error = value.error,
                 alertCause = alertCause,
-                onRetryRequest = onRetryRequest,
             )
         }
     }

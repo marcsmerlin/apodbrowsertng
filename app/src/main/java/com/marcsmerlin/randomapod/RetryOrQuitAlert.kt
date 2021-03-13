@@ -8,15 +8,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kotlin.system.exitProcess
 
+private val onDismissRequest = { exitProcess(1) }
+private const val advisoryText = "Click Quit to close the app or Retry to try again."
+
 @Composable
 fun RetryOrQuitAlert(
     error: Exception,
     alertCause: String,
     modifier: Modifier = Modifier,
-    onRetryRequest: () -> Unit,
 ) {
-    val onDismissRequest = { exitProcess(1) }
-    val advisoryText = "Click Quit to close the app or Retry to try again."
+    val onRetryRequest = LocalOnRetryRequest.current
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -46,6 +47,5 @@ fun PreviewRetryOrQuitDialog() {
     RetryOrQuitAlert(
         alertCause = "An error has occurred accessing the Apod Archive.",
         error = IllegalArgumentException(),
-        onRetryRequest = {}
     )
 }

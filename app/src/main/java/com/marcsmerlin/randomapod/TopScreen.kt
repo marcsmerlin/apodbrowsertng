@@ -45,7 +45,7 @@ private fun InitializingScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Initializing $appName\u2026")
+        Text(text = "Initializing the $appName app\u2026")
     }
 }
 
