@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.marcsmerlin.randomapod.utils.BitmapDownloadTracker
 import com.marcsmerlin.randomapod.utils.BitmapLoader
 
 @Composable
@@ -40,14 +41,14 @@ fun ApodContent(
 
         when (apod.mediaType) {
             "image" -> {
-                BitmapLoaderTracker(
+                ApodBitmapDownloadTracker(
                     bitmapLoaderStatus = bitmapLoader.queueRequest(apod.url),
                     restart = restart,
                 )
             }
             "video" -> {
                 if (apod.hasThumbnail()) {
-                    BitmapLoaderTracker(
+                    ApodBitmapDownloadTracker(
                         bitmapLoaderStatus = bitmapLoader.queueRequest(apod.thumbnailUrl),
                         restart = restart
                     )
@@ -55,7 +56,6 @@ fun ApodContent(
                     NoThumbnailAvailableForVideoNotice()
                 }
             }
-
             else -> {
                 UnsupportedMediaTypeNotice(mediaType = apod.mediaType)
             }
@@ -96,15 +96,16 @@ fun ApodContent(
     }
 }
 
+
 @Composable
-private fun BitmapLoaderTracker(
+private fun ApodBitmapDownloadTracker(
     bitmapLoaderStatus: State<BitmapLoader.Status>,
     restart: () -> Unit,
 ) {
+    BitmapDownloadTracker(
+        bitmapLoaderStatus = bitmapLoaderStatus,
 
-    when (val value = bitmapLoaderStatus.value) {
-
-        is BitmapLoader.Status.Loading -> {
+        loadingContent = { url ->
             Box(
                 Modifier
                     .fillMaxSize()
@@ -112,26 +113,26 @@ private fun BitmapLoaderTracker(
             ) {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
-        }
+        },
 
-        is BitmapLoader.Status.Failed -> {
-            val alertCause = "Error downloading image for ${value.url}:\n"
+        failedContent = { url, error ->
+            val alertCause = "Error downloading image for $url:\n"
 
             RetryOrQuitAlert(
-                error = value.error,
+                error = error,
                 alertCause = alertCause,
                 onRetryRequest = restart,
             )
-        }
+        },
 
-        is BitmapLoader.Status.Done -> {
-            ApodImage(value.url, value.bitmap)
-        }
-    }
+        doneContent = { url, bitmap ->
+            ApodBitmap(url, bitmap)
+        },
+    )
 }
 
 @Composable
-private fun ApodImage(
+private fun ApodBitmap(
     url: String,
     bitmap: Bitmap,
 ) {
@@ -169,7 +170,8 @@ private fun ApodImage(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    val text = "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
+    val text =
+        "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
@@ -177,7 +179,8 @@ private fun UnsupportedMediaTypeNotice(
 @Composable
 private fun NoThumbnailAvailableForVideoNotice(
 ) {
-    val text = "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
+    val text =
+        "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
 
     TextNotice(text = text)
 }
