@@ -9,9 +9,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlin.system.exitProcess
 
 @Composable
-fun RetryOrQuitDialog(
-    cause: String,
+fun RetryOrQuitAlert(
     error: Exception,
+    alertCause: String,
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = { exitProcess(1) },
     onRetryRequest: () -> Unit = {},
@@ -34,7 +34,7 @@ fun RetryOrQuitDialog(
         title = { Text(text = "$error") },
         text = {
             Text(
-                text = "$cause $advisoryText",
+                text = "$alertCause $advisoryText",
             )
         },
     )
@@ -43,8 +43,8 @@ fun RetryOrQuitDialog(
 @Preview
 @Composable
 fun PreviewRetryOrQuitDialog() {
-    RetryOrQuitDialog(
-        cause = "An error has occurred accessing the Apod Archive.",
+    RetryOrQuitAlert(
+        alertCause = "An error has occurred accessing the Apod Archive.",
         error = IllegalArgumentException(),
     )
 }
