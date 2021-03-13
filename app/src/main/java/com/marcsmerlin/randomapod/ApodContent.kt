@@ -96,7 +96,6 @@ fun ApodContent(
     }
 }
 
-
 @Composable
 private fun ApodBitmapDownloadTracker(
     bitmapLoaderStatus: State<BitmapLoader.Status>,
@@ -105,7 +104,7 @@ private fun ApodBitmapDownloadTracker(
     BitmapDownloadTracker(
         bitmapLoaderStatus = bitmapLoaderStatus,
 
-        loadingContent = { url ->
+        loadingContent = {
             Box(
                 Modifier
                     .fillMaxSize()
@@ -170,23 +169,24 @@ private fun ApodBitmap(
 private fun UnsupportedMediaTypeNotice(
     mediaType: String
 ) {
-    val text =
-        "Sorry, the media type \"$mediaType\" is not supported. Click on the floating info button above for a text description of this Apod."
-
-    TextNotice(text = text)
+    val cause = "Sorry, the media type \"$mediaType\" is not yet supported by this app."
+    ApodTextDescriptionAvailableNotice(cause = cause)
 }
 
 @Composable
 private fun NoThumbnailAvailableForVideoNotice(
 ) {
-    val text =
-        "Sorry, there is no thumbnail available to show for the video link provided. Click on the floating info button above for a text description of this Apod."
-
-    TextNotice(text = text)
+    val cause = "Sorry, there is no thumbnail available to display for this video media."
+    ApodTextDescriptionAvailableNotice(cause = cause)
 }
 
 @Composable
-private fun TextNotice(text: String) {
+
+private fun ApodTextDescriptionAvailableNotice(
+    cause: String
+) {
+    val advisoryText = "Click on the floating info button above for a text description of this Apod."
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -194,7 +194,7 @@ private fun TextNotice(text: String) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = text,
+            text = "$cause $advisoryText",
             textAlign = TextAlign.Center,
         )
     }
